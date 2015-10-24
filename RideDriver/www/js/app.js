@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
+angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','starter.directives'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -50,7 +50,18 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     views: {
       'tab-gohome': {
         templateUrl: 'templates/driver-leave.html',
-        controller: 'DashCtrl'
+        controller: 'goHomeCtrl'
+      }
+    }
+  })
+
+  .state('tab.gohome_ready', {
+    url: '/gohome/ready/:licence/:minute/:location/:destination',
+    views: {
+      'tab-gohome': {
+        templateUrl: 'templates/driver-leave2.html',
+        controller: 'goHomeMatchCtrl',
+        params: ['licence','minute','location','destination']
       }
     }
   })
@@ -79,7 +90,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     views: {
       'tab-setting': {
         templateUrl: 'templates/driver-setting.html',
-        controller: 'AccountCtrl'
+        controller: 'SettingCtrl'
       }
     }
   });

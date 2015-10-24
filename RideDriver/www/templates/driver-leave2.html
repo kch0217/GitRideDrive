@@ -1,0 +1,99 @@
+<ion-view view-title="Matching in Progress" hide-back-button="true">
+  <ion-content>
+<div class="list card">
+
+  <a href="#" class="item" >
+  	<center style="font-size: 40px"><i class="icon ion-model-s"></i>
+  
+   	{{licence}}
+   	</center>
+
+      </a>
+
+  <a href="#" class="item item-divider">
+  <center>towards</center>
+  </a>
+
+  <a href="#" class="item" >
+    <center style="font-size: 20px">
+    {{destination}}
+ 
+    </center>
+
+  </a>
+
+  </a>
+
+  <a href="#" class="item item-divider">
+	<center>departing in</center>
+  </a>
+
+  <a href="#" class="item" >
+  	<center style="font-size: 40px"><i class="icon ion-ios-time-outline" ng-init="countdown()"></i>
+  
+   	<timer time="time"></timer>
+   	</center>
+
+  </a>
+
+    <a href="#" class="item item-divider">
+	<center>from</center>
+  </a>
+
+    <a href="#" class="item" >
+  	<center style="font-size: 20px">
+  
+   	{{location}}
+   	</center>
+
+  </a>
+
+
+
+
+</div>
+
+<div class="row">
+	<div class="col">
+		<div class="list card">
+			<div class="item item-divider">
+				Passenger List
+			</div>
+			<div class="item">
+				Mary
+			</div>
+
+		</div>
+	</div>
+	<div class="col">
+		<div class="list card">
+    <a class="item item-divider item-icon-left" href="#">
+      <i class="icon ion-ios-chatboxes-outline"></i>
+      Chatroom
+      </a>
+
+		</div>
+
+            <div class="list card">
+    <a class="item item-divider item-icon-left" href="#">
+      <i class="icon ion-map"></i>
+      Map
+      </a>
+
+    </div>
+
+
+	</div>
+</div>
+
+
+
+  </ion-content>
+  <ion-footer-bar class="bar-assertive" ng-click="goBack()">
+
+  <h1 class="title">Cancel</h1>
+
+</ion-footer-bar>
+
+</ion-view>
+
