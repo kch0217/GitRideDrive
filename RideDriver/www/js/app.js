@@ -66,6 +66,18 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
     }
   })
 
+  .state('tab.gohome_chat', {
+    url: '/gohome/ready/:id',
+    views: {
+      'tab-gohome': {
+        templateUrl: 'templates/driver-chatroom.html',
+        controller: 'chatCtrl',
+        params: ['id']
+      }
+    }
+  })
+
+
   .state('tab.gohkust', {
       url: '/gohkust',
       views: {

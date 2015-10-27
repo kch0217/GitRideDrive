@@ -91,7 +91,7 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('goHomeMatchCtrl', function($scope, $stateParams, $ionicHistory){
+.controller('goHomeMatchCtrl', function($scope, $stateParams, $ionicHistory, $state){
   $scope.licence = $stateParams.licence;
   $scope.time = $stateParams.minute;
   $scope.location = $stateParams.location;
@@ -104,6 +104,10 @@ angular.module('starter.controllers', [])
     console.log("Back");
     $ionicHistory.goBack();
   };
+
+  $scope.chat = function(){
+    $state.go('tab.gohome_chat',{'id':'012'});
+  }
 
 
 
@@ -135,7 +139,31 @@ angular.module('starter.controllers', [])
 
 })
 
+.controller('chatCtrl', function($scope, $stateParams, Chats){
+  $scope.id = $stateParams.id;
 
-.controller('SettingCtrl', function($scope){
+  $scope.chats = Chats.all();
 
+  $scope.submitChat = function(){
+    if ($scope.currentmsg =="" || $scope.currentmsg == null){
+      return;
+    }
+    console.log($scope.currentmsg);
+    var msgPackage = {'id': $scope.chats[$scope.chats.length-1].id +1,
+                        'name': 'Mary', 'text': $scope.currentmsg, 'date': new Date().toLocaleString(),
+                        'icon': 'http://www.business-software.com/wp-content/uploads/2013/02/avatar_placeholder.png'};
+    $scope.chats.push(msgPackage);
+    $scope.currentmsg = "";
+  }
+
+
+
+})
+
+
+.controller('SettingCtrl', function($scope, $ionicHistory, $state){
+  $scope.logout = function(){
+    $ionicHistory.clearCache();
+    $state.go('signIn');
+  }
 });
