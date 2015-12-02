@@ -31,6 +31,8 @@ angular.module('starter.controllers', [])
   $scope.signIn = function(){
     console.log('click login');
 
+
+
     $state.go('tab.gohome', {}, {reload:true});
   }
 
@@ -39,6 +41,11 @@ angular.module('starter.controllers', [])
 .controller('goHomeCtrl',function($scope, $state, $ionicHistory){
   $scope.ready = function(destination){
 
+    if (destination == 'Hang Hau'){
+      $scope.pickUpPt = $scope.pickUpPts[0];
+    }
+    else
+      $scope.pickUpPt = $scope.pickUpPts[1];
     $state.go('tab.gohome_ready',{"licence":$scope.licence,"minute":$scope.time,'location': $scope.pickUpPt, 'destination': destination});
   }
 
@@ -74,18 +81,18 @@ angular.module('starter.controllers', [])
   }
 
   //testing, should be loaded from server
-  $scope.pickUpPts = ["North Gate", "South Gate", "Piazza", "Hall 9"];
-  $scope.pickUpIndex = 0;
-  $scope.pickUpPt = $scope.pickUpPts[$scope.pickUpIndex];
-  $scope.changePickUpPt = function(value){
-    if ($scope.pickUpIndex + value < 0)
-      $scope.pickUpIndex = $scope.pickUpPts.length-1;
-    else if ($scope.pickUpIndex + value >= $scope.pickUpPts.length)
-      $scope.pickUpIndex = 0;
-    else
-      $scope.pickUpIndex += value;
-    $scope.pickUpPt = $scope.pickUpPts[$scope.pickUpIndex];
-  }
+  $scope.pickUpPts = [ "North Gate", "South Gate"];
+  // $scope.pickUpIndex = 0;
+  // $scope.pickUpPt = $scope.pickUpPts[$scope.pickUpIndex];
+  // $scope.changePickUpPt = function(value){
+  //   if ($scope.pickUpIndex + value < 0)
+  //     $scope.pickUpIndex = $scope.pickUpPts.length-1;
+  //   else if ($scope.pickUpIndex + value >= $scope.pickUpPts.length)
+  //     $scope.pickUpIndex = 0;
+  //   else
+  //     $scope.pickUpIndex += value;
+  //   $scope.pickUpPt = $scope.pickUpPts[$scope.pickUpIndex];
+  // }
 
 
 
