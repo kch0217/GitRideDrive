@@ -36,6 +36,18 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
       controller: 'signCtrl'
   })
 
+  .state('register',{
+    url: '/register',
+    templateUrl: 'templates/register.html',
+    controller: 'registerCtrl'
+  })
+
+  .state('forgetPW', {
+    url: '/forgetPW',
+    templateUrl: 'templates/forgetPW.html',
+    controller: 'forgetCtrl'
+  })
+
   // setup an abstract state for the tabs directive
     .state('tab', {
     url: '/tab',

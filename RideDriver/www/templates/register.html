@@ -1,0 +1,119 @@
+<ion-view title="Registration">
+    <ion-content padding="true" class="has-header has-footer" scroll="true">
+        <div class="list">
+            <label class="item item-divider">
+                <span>Basic Information</span>
+
+            </label>
+            <label class="item item-input item-stacked-label">
+                <span class="input-label">First name</span>
+                <input type="text" placeholder="" ng-model="info.firstname">
+              </label>
+              <label class="item item-input item-stacked-label">
+                <span class="input-label">Last name</span>
+                <input type="text" placeholder="" ng-model="info.lastname">
+              </label>
+            <label class="item item-input item-select">
+                <div class="input-label">
+                  Gender
+                </div>
+                <select ng-model="info.gender">
+                    <option selected></option>
+                    <option>male</option>
+                    <option>female</option>
+                </select>
+              </label>
+              <label class="item item-input item-stacked-label">
+                <span class="input-label">Password</span>
+                <input type="password" placeholder="" ng-model="info.password">
+              </label>
+              <label class="item item-input item-stacked-label">
+                <span class="input-label">Type your passward again</span>
+                <input type="password" placeholder="">
+              </label>
+
+              <label class="item item-input item-stacked-label">
+                <span class="input-label">Phone number</span>
+                <input type="text" placeholder="" ng-model="info.phonenumber">
+              </label>
+
+
+        </div>
+        <div class="list">
+            <label class="item item-divider">
+                <span>User Authentication</span>
+            </label>
+
+            <label class="item item-toggle">
+                Do you have an HKUST email account?
+                <label class="toggle">
+                   <input type="checkbox" ng-model="hkustMember">
+                   <div class="track">
+                     <div class="handle"></div>
+                   </div>
+                </label>
+        
+            </label>
+            <label class="item item-input item-stacked-label" ng-if="hkustMember">
+                <span class="input-label">Your HKUST email address</span>
+                <input type="email" placeholder="" ng-model="info.email">
+            </label>
+        </div>
+
+        <div class="list">
+            <label class="item item-divider">
+                <span>Ridesharing Preference</span>
+            </label>
+            <label class="item item-toggle">
+                Do you have a car?
+                <label class="toggle">
+                   <input type="checkbox" ng-model="info.haveCar" ng-change="checkCar();">
+                   <div class="track">
+                     <div class="handle"></div>
+                   </div>
+                </label>
+
+        
+            </label>
+            <div ng-if="info.haveCar" ng-repeat="car in carLicence track by $index">
+              <label class="item item-divider">
+                <span>Car {{$index +1}}</span>
+              </label>
+              <label class="item item-input item-stacked-label">
+                  <span class="input-label">Licence number</span>
+                  <input type="text" placeholder="" ng-model="info.carNo[$index].license_number">
+              </label>
+              <label class="item item-input item-stacked-label">
+                <span class="input-label">Color</span>
+                <input type="text" placeholder="" ng-model="info.carNo[$index].color">
+              </label>
+              <label class="item item-input item-stacked-label">
+                <span class="input-label">Manufacturer</span>
+                <input type="text" placeholder="" ng-model="info.carNo[$index].maker">
+              </label>
+              
+            </div>
+
+            </label>
+            <div class="button-bar" ng-if="info.haveCar">
+              <a class="button" ng-click="addCar();">Add</a>
+              <a class="button" ng-click="removeCar();">Remove</a>
+            </div>
+
+<!--             <label class="item item-divider item-icon-left item-icon-right" ng-if="haveCar">
+                <button class="icon ion-android-add" ng-click="addCar();"></button>
+
+                <button class="icon ion-ios-minus-empty" ng-click="alert('hi');"></button>
+            </label> -->
+
+        </div>
+    </ion-content>
+
+<ion-footer-bar align-title="left" class="bar-light">
+
+  <div class="button-bar">
+  <a class="button button-balanced" ng-click="confirm()">Confirm</a>
+  <a class="button button-dark" ng-click="reset()">Reset</a>
+
+</ion-footer-bar>
+</ion-view>
