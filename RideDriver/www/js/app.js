@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','starter.directives'])
+angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','starter.directives', 'ngResource', 'lbServices'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -122,4 +122,9 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','s
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/signin');
 
+})
+
+.config(function(LoopBackResourceProvider){
+  // Change the URL where to access the LoopBack REST API server
+    LoopBackResourceProvider.setUrlBase('http://147.8.173.112:3000/api');
 });

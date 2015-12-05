@@ -1237,6 +1237,33 @@ module.factory(
           method: "PUT"
         },
 
+        // INTERNAL. Use Member.owns.findById() instead.
+        "prototype$__findById__owns": {
+          params: {
+          'fk': '@fk'
+          },
+          url: urlBase + "/Members/:id/owns/:fk",
+          method: "GET"
+        },
+
+        // INTERNAL. Use Member.owns.destroyById() instead.
+        "prototype$__destroyById__owns": {
+          params: {
+          'fk': '@fk'
+          },
+          url: urlBase + "/Members/:id/owns/:fk",
+          method: "DELETE"
+        },
+
+        // INTERNAL. Use Member.owns.updateById() instead.
+        "prototype$__updateById__owns": {
+          params: {
+          'fk': '@fk'
+          },
+          url: urlBase + "/Members/:id/owns/:fk",
+          method: "PUT"
+        },
+
         /**
          * @ngdoc method
          * @name lbServices.Member#prototype$__get__accessTokens
@@ -1371,6 +1398,31 @@ module.factory(
          */
         "prototype$__count__accessTokens": {
           url: urlBase + "/Members/:id/accessTokens/count",
+          method: "GET"
+        },
+
+        // INTERNAL. Use Member.owns() instead.
+        "prototype$__get__owns": {
+          isArray: true,
+          url: urlBase + "/Members/:id/owns",
+          method: "GET"
+        },
+
+        // INTERNAL. Use Member.owns.create() instead.
+        "prototype$__create__owns": {
+          url: urlBase + "/Members/:id/owns",
+          method: "POST"
+        },
+
+        // INTERNAL. Use Member.owns.destroyAll() instead.
+        "prototype$__delete__owns": {
+          url: urlBase + "/Members/:id/owns",
+          method: "DELETE"
+        },
+
+        // INTERNAL. Use Member.owns.count() instead.
+        "prototype$__count__owns": {
+          url: urlBase + "/Members/:id/owns/count",
           method: "GET"
         },
 
@@ -1960,6 +2012,45 @@ module.factory(
           method: "POST"
         },
 
+        /**
+         * @ngdoc method
+         * @name lbServices.Member#register
+         * @methodOf lbServices.Member
+         *
+         * @description
+         *
+         * <em>
+         * (The remote method definition does not provide any description.)
+         * </em>
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *   This method does not accept any parameters.
+         *   Supply an empty object or omit this argument altogether.
+         *
+         * @param {Object} postData Request data.
+         *
+         * This method expects a subset of model properties as request parameters.
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * Data properties:
+         *
+         *  - `status` – `{string=}` - 
+         */
+        "register": {
+          url: urlBase + "/Members/register",
+          method: "POST"
+        },
+
         // INTERNAL. Use Ride.drivers() instead.
         "::get::Ride::drivers": {
           url: urlBase + "/Rides/:id/drivers",
@@ -2268,6 +2359,307 @@ module.factory(
     */
     R.modelName = "Member";
 
+    /**
+     * @ngdoc object
+     * @name lbServices.Member.owns
+     * @header lbServices.Member.owns
+     * @object
+     * @description
+     *
+     * The object `Member.owns` groups methods
+     * manipulating `Own` instances related to `Member`.
+     *
+     * Call {@link lbServices.Member#owns Member.owns()}
+     * to query all related instances.
+     */
+
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Member#owns
+         * @methodOf lbServices.Member
+         *
+         * @description
+         *
+         * Queries owns of Member.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - User id
+         *
+         *  - `filter` – `{object=}` - 
+         *
+         * @param {function(Array.<Object>,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Array.<Object>} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `Own` object.)
+         * </em>
+         */
+        R.owns = function() {
+          var TargetResource = $injector.get("Own");
+          var action = TargetResource["::get::Member::owns"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Member.owns#count
+         * @methodOf lbServices.Member.owns
+         *
+         * @description
+         *
+         * Counts owns of Member.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - User id
+         *
+         *  - `where` – `{object=}` - Criteria to match model instances
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * Data properties:
+         *
+         *  - `count` – `{number=}` - 
+         */
+        R.owns.count = function() {
+          var TargetResource = $injector.get("Own");
+          var action = TargetResource["::count::Member::owns"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Member.owns#create
+         * @methodOf lbServices.Member.owns
+         *
+         * @description
+         *
+         * Creates a new instance in owns of this model.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - User id
+         *
+         * @param {Object} postData Request data.
+         *
+         * This method expects a subset of model properties as request parameters.
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `Own` object.)
+         * </em>
+         */
+        R.owns.create = function() {
+          var TargetResource = $injector.get("Own");
+          var action = TargetResource["::create::Member::owns"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Member.owns#createMany
+         * @methodOf lbServices.Member.owns
+         *
+         * @description
+         *
+         * Creates a new instance in owns of this model.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - User id
+         *
+         * @param {Object} postData Request data.
+         *
+         * This method expects a subset of model properties as request parameters.
+         *
+         * @param {function(Array.<Object>,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Array.<Object>} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `Own` object.)
+         * </em>
+         */
+        R.owns.createMany = function() {
+          var TargetResource = $injector.get("Own");
+          var action = TargetResource["::createMany::Member::owns"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Member.owns#destroyAll
+         * @methodOf lbServices.Member.owns
+         *
+         * @description
+         *
+         * Deletes all owns of this model.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - User id
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * This method returns no data.
+         */
+        R.owns.destroyAll = function() {
+          var TargetResource = $injector.get("Own");
+          var action = TargetResource["::delete::Member::owns"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Member.owns#destroyById
+         * @methodOf lbServices.Member.owns
+         *
+         * @description
+         *
+         * Delete a related item by id for owns.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - User id
+         *
+         *  - `fk` – `{*}` - Foreign key for owns
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * This method returns no data.
+         */
+        R.owns.destroyById = function() {
+          var TargetResource = $injector.get("Own");
+          var action = TargetResource["::destroyById::Member::owns"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Member.owns#findById
+         * @methodOf lbServices.Member.owns
+         *
+         * @description
+         *
+         * Find a related item by id for owns.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - User id
+         *
+         *  - `fk` – `{*}` - Foreign key for owns
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `Own` object.)
+         * </em>
+         */
+        R.owns.findById = function() {
+          var TargetResource = $injector.get("Own");
+          var action = TargetResource["::findById::Member::owns"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Member.owns#updateById
+         * @methodOf lbServices.Member.owns
+         *
+         * @description
+         *
+         * Update a related item by id for owns.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - User id
+         *
+         *  - `fk` – `{*}` - Foreign key for owns
+         *
+         * @param {Object} postData Request data.
+         *
+         * This method expects a subset of model properties as request parameters.
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `Own` object.)
+         * </em>
+         */
+        R.owns.updateById = function() {
+          var TargetResource = $injector.get("Own");
+          var action = TargetResource["::updateById::Member::owns"];
+          return action.apply(R, arguments);
+        };
 
     return R;
   }]);
@@ -5412,6 +5804,65 @@ module.factory(
         "createChangeStream": {
           url: urlBase + "/Owns/change-stream",
           method: "POST"
+        },
+
+        // INTERNAL. Use Member.owns.findById() instead.
+        "::findById::Member::owns": {
+          params: {
+          'fk': '@fk'
+          },
+          url: urlBase + "/Members/:id/owns/:fk",
+          method: "GET"
+        },
+
+        // INTERNAL. Use Member.owns.destroyById() instead.
+        "::destroyById::Member::owns": {
+          params: {
+          'fk': '@fk'
+          },
+          url: urlBase + "/Members/:id/owns/:fk",
+          method: "DELETE"
+        },
+
+        // INTERNAL. Use Member.owns.updateById() instead.
+        "::updateById::Member::owns": {
+          params: {
+          'fk': '@fk'
+          },
+          url: urlBase + "/Members/:id/owns/:fk",
+          method: "PUT"
+        },
+
+        // INTERNAL. Use Member.owns() instead.
+        "::get::Member::owns": {
+          isArray: true,
+          url: urlBase + "/Members/:id/owns",
+          method: "GET"
+        },
+
+        // INTERNAL. Use Member.owns.create() instead.
+        "::create::Member::owns": {
+          url: urlBase + "/Members/:id/owns",
+          method: "POST"
+        },
+
+        // INTERNAL. Use Member.owns.createMany() instead.
+        "::createMany::Member::owns": {
+          isArray: true,
+          url: urlBase + "/Members/:id/owns",
+          method: "POST"
+        },
+
+        // INTERNAL. Use Member.owns.destroyAll() instead.
+        "::delete::Member::owns": {
+          url: urlBase + "/Members/:id/owns",
+          method: "DELETE"
+        },
+
+        // INTERNAL. Use Member.owns.count() instead.
+        "::count::Member::owns": {
+          url: urlBase + "/Members/:id/owns/count",
+          method: "GET"
         },
 
         // INTERNAL. Use Vehicle.owns.findById() instead.

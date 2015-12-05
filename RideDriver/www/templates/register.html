@@ -29,7 +29,7 @@
               </label>
               <label class="item item-input item-stacked-label">
                 <span class="input-label">Type your passward again</span>
-                <input type="password" placeholder="">
+                <input type="password" placeholder="" ng-model="info.password2">
               </label>
 
               <label class="item item-input item-stacked-label">
@@ -47,14 +47,14 @@
             <label class="item item-toggle">
                 Do you have an HKUST email account?
                 <label class="toggle">
-                   <input type="checkbox" ng-model="hkustMember">
+                   <input type="checkbox" ng-model="info.hkustMember">
                    <div class="track">
                      <div class="handle"></div>
                    </div>
                 </label>
         
             </label>
-            <label class="item item-input item-stacked-label" ng-if="hkustMember">
+            <label class="item item-input item-stacked-label" ng-if="info.hkustMember">
                 <span class="input-label">Your HKUST email address</span>
                 <input type="email" placeholder="" ng-model="info.email">
             </label>

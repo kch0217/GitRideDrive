@@ -27,15 +27,136 @@ angular.module('starter.controllers', [])
   };
 })
 
-.controller('signCtrl', function($scope, $state){
-  $scope.signIn = function(){
-    console.log('click login');
 
 
+.controller('signCtrl', function($scope, $state, Member,$ionicPopup, loadingService, $ionicLoading, LoopBackAuth){
 
-    $state.go('tab.gohome', {}, {reload:true});
+  $scope.signin = function(){
+    console.log('Test');
+    loadingService.start($ionicLoading);
+    
+    Member.login({"email": this.email, "password": this.password}, function(content, code){
+      //success
+
+      loadingService.end($ionicLoading);
+      $state.go('tab.gohome',{},{reload:true});
+    }, function(error){
+      //fail
+      loadingService.end($ionicLoading);
+      var alertPopup = $ionicPopup.alert({
+        title: 'Error',
+        template: 'Unable to login'
+      });
+      alertPopup.then(function(res) {
+        console.log('Error to login');
+      });
+    });
+
+//to be deleted
+    $state.go('tab.gohome',{},{reload:true});
+    
   }
 
+  $scope.register = function(){
+    $state.go('register');
+  }
+})
+
+
+.controller('registerCtrl',function($scope, $ionicPopup, $ionicHistory, Member){
+  $scope.numOfCar = 0;
+  $scope.carLicence = [];
+  $scope.info = { 'carNo':[]}
+
+  
+
+  $scope.checkCar = function(){
+    console.log("click check car");
+
+    
+    if ($scope.info.haveCar){
+      $scope.numOfCar = 1;
+      $scope.carLicence.push('');
+      
+      $scope.info.carNo.push('');
+      console.log($scope.carLicence);
+    }
+    else{
+      $scope.numOfCar = 0;
+      $scope.carLicence = [];
+    }
+  }
+
+  $scope.addCar = function(){
+    if ($scope.info.haveCar){
+      console.log("click add car");
+      $scope.numOfCar++;
+      $scope.carLicence.push('');
+    }
+  }
+
+  $scope.removeCar = function(){
+    if ($scope.info.haveCar && $scope.numOfCar > 1){
+      console.log("click remove car");
+      $scope.numOfCar--;
+      $scope.carLicence.splice(-1,1);
+    }
+  }
+
+  $scope.confirm = function(){
+    // A confirm dialog
+    console.log($scope.info.carNo);
+
+   var confirmPopup = $ionicPopup.confirm({
+     title: 'Confirm you application',
+     template: 'Do you want to submit the data?'
+   });
+   confirmPopup.then(function(res) {
+     if(res) {
+       //submit
+
+
+       var datasent = { "first_name": $scope.info.firstname,
+                        "last_name": $scope.info.lastname,
+                        "phone_number": parseInt($scope.info.phonenumber),
+                        "gender": $scope.info.gender,
+                        "gender_preference": 'no',
+                        "authorized": 'no',
+                        "isDriver": $scope.numOfCar>0? 'yes': 'no',
+                        "email": $scope.info.email,
+                        "password": $scope.info.password,
+                        "car": $scope.info.carNo
+                      };
+
+      Member.register(datasent, function(content){
+        console.log(content);
+        var alertPopup = $ionicPopup.alert({
+         title: 'Done',
+         template: 'Please activate your account from your email.'
+       });
+       alertPopup.then(function(res) {
+         $ionicHistory.goBack();
+       });
+      }, function(error){
+        console.log(error);
+
+      })
+
+     } else {
+       
+     }
+   });
+
+
+  }
+
+  $scope.reset = function(){
+    $scope.numOfCar = 0;
+    $scope.carLicence = [];
+    $scope.info = { 'carNo':[]};
+    
+
+  }
 })
 
 .controller('goHomeCtrl',function($scope, $state, $ionicHistory){
@@ -146,26 +267,7 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('chatCtrl', function($scope, $stateParams, Chats){
-  $scope.id = $stateParams.id;
 
-  $scope.chats = Chats.all();
-
-  $scope.submitChat = function(){
-    if ($scope.currentmsg =="" || $scope.currentmsg == null){
-      return;
-    }
-    console.log($scope.currentmsg);
-    var msgPackage = {'id': $scope.chats[$scope.chats.length-1].id +1,
-                        'name': 'Mary', 'text': $scope.currentmsg, 'date': new Date().toLocaleString(),
-                        'icon': 'http://www.business-software.com/wp-content/uploads/2013/02/avatar_placeholder.png'};
-    $scope.chats.push(msgPackage);
-    $scope.currentmsg = "";
-  }
-
-
-
-})
 
 
 .controller('SettingCtrl', function($scope, $ionicHistory, $state){
