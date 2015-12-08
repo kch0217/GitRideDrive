@@ -29,7 +29,7 @@ angular.module('starter.controllers', [])
 
 
 
-.controller('signCtrl', function($scope, $state, Member,$ionicPopup, loadingService, $ionicLoading, LoopBackAuth){
+.controller('signCtrl', function($scope, $state, Member,$ionicPopup, loadingService, $ionicLoading, LoopBackAuth, userRegister, pushRegister){
 
   $scope.signin = function(){
     console.log('Test');
@@ -37,7 +37,14 @@ angular.module('starter.controllers', [])
     
     Member.login({"email": this.email, "password": this.password}, function(content, code){
       //success
+      userRegister.register();
+      pushRegister.register();
+      // console.log(pushRegister.token);
+      // Member.updateToken(pushRegister.token, function(value, responseheaders){
+      //   console.log(value);
+      // }, function(error){
 
+      // });
       loadingService.end($ionicLoading);
       $state.go('tab.gohome',{},{reload:true});
     }, function(error){
@@ -53,7 +60,7 @@ angular.module('starter.controllers', [])
     });
 
 //to be deleted
-    $state.go('tab.gohome',{},{reload:true});
+    // $state.go('tab.gohome',{},{reload:true});
     
   }
 
@@ -66,7 +73,7 @@ angular.module('starter.controllers', [])
 .controller('registerCtrl',function($scope, $ionicPopup, $ionicHistory, Member){
   $scope.numOfCar = 0;
   $scope.carLicence = [];
-  $scope.info = { 'carNo':[]}
+  $scope.info = { 'carNo':[],'gender': 'male'}
 
   
 
@@ -153,13 +160,13 @@ angular.module('starter.controllers', [])
   $scope.reset = function(){
     $scope.numOfCar = 0;
     $scope.carLicence = [];
-    $scope.info = { 'carNo':[]};
+    $scope.info = { 'carNo':[], 'gender': 'male'};
     
 
   }
 })
 
-.controller('goHomeCtrl',function($scope, $state, $ionicHistory){
+.controller('goHomeCtrl',function($scope, $state, $ionicHistory, Ride, Own, Request){
   $scope.ready = function(destination){
 
     if (destination == 'Hang Hau'){
@@ -167,6 +174,25 @@ angular.module('starter.controllers', [])
     }
     else
       $scope.pickUpPt = $scope.pickUpPts[1];
+    // $scope.test();
+    Ride.addRide({
+      "license_number": $scope.licence,
+      "beforeArrive": $scope.time,
+      "seat_number": $scope.numOfPassenger,
+      "destination_name": destination
+    }, function(value, responseheaders){
+//test
+      // console.log(value.status);
+      // Request.push(value.status, function(value2, responseheaders){
+      //   console.log(value2);
+      // }, function(error){
+      //   console.log(error);
+      // });
+
+
+    }, function(error){
+
+    });
     $state.go('tab.gohome_ready',{"licence":$scope.licence,"minute":$scope.time,'location': $scope.pickUpPt, 'destination': destination});
   }
 
@@ -188,9 +214,19 @@ angular.module('starter.controllers', [])
   }
 
   //testing, should be loaded from server
-  $scope.licences = ["AX123", "BX546", "WT369", "GG789"];
+  // $scope.licences = ["AX123", "BX546", "WT369", "GG789"];
+  
+  Own.getVehicle(function(value, responseheaders){
+    console.log(value);
+    $scope.licences = value.vehicle;
+    $scope.licence = $scope.licences[$scope.licenceIndex];
+  }, function(error){
+
+  });
+
+
   $scope.licenceIndex = 0;
-  $scope.licence = $scope.licences[$scope.licenceIndex];
+  
   $scope.changeLicence = function(value){
     if ($scope.licenceIndex + value < 0)
       $scope.licenceIndex = $scope.licences.length-1;
@@ -267,12 +303,22 @@ angular.module('starter.controllers', [])
 
 })
 
+.controller('forgetCtrl', function($scope){
+
+})
 
 
 
-.controller('SettingCtrl', function($scope, $ionicHistory, $state){
+
+.controller('SettingCtrl', function($scope, $ionicHistory, $state, Member, pushRegister){
   $scope.logout = function(){
-    $ionicHistory.clearCache();
-    $state.go('signIn');
+    Member.logout({}, function(value, responseheader){
+      pushRegister.unregister();
+      $state.go('signIn');
+    }, function(error){
+      console.log('fail to logout');
+
+    })
+    
   }
 });
