@@ -29,7 +29,7 @@ angular.module('starter.controllers', [])
 
 
 
-.controller('signCtrl', function($scope, $state, Member,$ionicPopup, loadingService, $ionicLoading, LoopBackAuth, userRegister, pushRegister){
+.controller('signCtrl', function($scope, $state, Member,$ionicPopup, loadingService, $ionicLoading, LoopBackAuth, userRegister, pushRegister, $ionicHistory){
 
   $scope.signin = function(){
     console.log('Test');
@@ -67,6 +67,13 @@ angular.module('starter.controllers', [])
   $scope.register = function(){
     $state.go('register');
   }
+
+  $scope.$on("$ionicView.enter", function(scopes, states){
+    $ionicHistory.clearHistory();
+    $ionicHistory.clearCache();
+  });
+
+
 })
 
 
@@ -135,15 +142,26 @@ angular.module('starter.controllers', [])
                         "car": $scope.info.carNo
                       };
 
-      Member.register(datasent, function(content){
+      Member.validationandregister(datasent, function(content, responseheader){
         console.log(content);
-        var alertPopup = $ionicPopup.alert({
-         title: 'Done',
-         template: 'Please activate your account from your email.'
-       });
-       alertPopup.then(function(res) {
-         $ionicHistory.goBack();
-       });
+        if (content.status =='success'){
+          var alertPopup = $ionicPopup.alert({
+           title: 'Done',
+           template: 'Please activate your account from your email.'
+         });
+         alertPopup.then(function(res) {
+           $ionicHistory.goBack();
+         });
+       }else
+       {
+          var alertPopup = $ionicPopup.alert({
+           title: 'Error',
+           template: 'Please check your information.'
+         });
+         alertPopup.then(function(res) {
+           
+         });
+       }
       }, function(error){
         console.log(error);
 
@@ -166,34 +184,48 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('goHomeCtrl',function($scope, $state, $ionicHistory, Ride, Own, Request){
+.controller('goHomeCtrl',function($scope, $state, $ionicHistory, Ride, Own, Request, $ionicPopup, Member, pushRegister, licencesManager){
   $scope.ready = function(destination){
+    var confirmPopup = $ionicPopup.confirm({
+     title: 'Confirm',
+     template: 'Are you sure you are heading to '+ destination+'?'
+   });
 
-    if (destination == 'Hang Hau'){
-      $scope.pickUpPt = $scope.pickUpPts[0];
-    }
-    else
-      $scope.pickUpPt = $scope.pickUpPts[1];
-    // $scope.test();
-    Ride.addRide({
-      "license_number": $scope.licence,
-      "beforeArrive": $scope.time,
-      "seat_number": $scope.numOfPassenger,
-      "destination_name": destination
-    }, function(value, responseheaders){
-//test
-      // console.log(value.status);
-      // Request.push(value.status, function(value2, responseheaders){
-      //   console.log(value2);
-      // }, function(error){
-      //   console.log(error);
-      // });
+   confirmPopup.then(function(res) {
+     if(res) {
+        console.log('You are sure');
+        if (destination == 'Hang Hau'){
+          $scope.pickUpPt = $scope.pickUpPts[0];
+        }
+        else
+        $scope.pickUpPt = $scope.pickUpPts[1];
+        // $scope.test();
+        Ride.addRide({
+        "license_number": $scope.licence,
+        "beforeArrive": $scope.time,
+        "seat_number": $scope.numOfPassenger,
+        "destination_name": destination
+        }, function(value, responseheaders){
+  //test
+        // console.log(value.status);
+        // Request.push(value.status, function(value2, responseheaders){
+        //   console.log(value2);
+        // }, function(error){
+        //   console.log(error);
+        // });
 
 
-    }, function(error){
+        }, function(error){
 
-    });
-    $state.go('tab.gohome_ready',{"licence":$scope.licence,"minute":$scope.time,'location': $scope.pickUpPt, 'destination': destination});
+        });
+        $state.go('tab.gohome_ready',{"licence":$scope.licence,"minute":$scope.time,'location': $scope.pickUpPt, 'destination': destination});
+
+     } else {
+       return;
+     }
+   });
+
+
   }
 
   // $ionicHistory.nextViewOptions({
@@ -215,14 +247,59 @@ angular.module('starter.controllers', [])
 
   //testing, should be loaded from server
   // $scope.licences = ["AX123", "BX546", "WT369", "GG789"];
-  
-  Own.getVehicle(function(value, responseheaders){
-    console.log(value);
-    $scope.licences = value.vehicle;
-    $scope.licence = $scope.licences[$scope.licenceIndex];
-  }, function(error){
 
-  });
+  var checkVehicle = function(){
+
+    $scope.licences = licencesManager.getLicence();
+    console.log($scope.licences);
+    if ($scope.licences.length ==0){
+      var alertPopup = $ionicPopup.alert({
+         title: 'Error',
+         template: 'You should use the passenger version.'
+       });
+       alertPopup.then(function(res) {
+          Member.logout({}, function(value, responseheader){
+            pushRegister.unregister();
+            $ionicHistory.goBack();
+          }, function(error){
+            console.log('fail to logout');
+
+          })
+
+       });
+    }
+    else
+      $scope.licence = $scope.licences[$scope.licenceIndex];
+  }
+
+  licencesManager.getLicenceFromServer(checkVehicle);
+
+
+  
+  // Own.getVehicle(function(value, responseheaders){
+  //   console.log(value.vehicle);
+  //   if (value.vehicle.length==0){
+  //     var alertPopup = $ionicPopup.alert({
+  //        title: 'Error',
+  //        template: 'You should use the passenger version.'
+  //      });
+  //      alertPopup.then(function(res) {
+  //         Member.logout({}, function(value, responseheader){
+  //           pushRegister.unregister();
+  //           $ionicHistory.goBack();
+  //         }, function(error){
+  //           console.log('fail to logout');
+
+  //         })
+
+  //      });
+  //   }
+  //   $scope.licences = value.vehicle;
+  //   $scope.licence = $scope.licences[$scope.licenceIndex];
+  // }, function(error){
+  //   console.log(error);
+
+  // });
 
 
   $scope.licenceIndex = 0;
@@ -303,8 +380,33 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('forgetCtrl', function($scope){
+.controller('forgetCtrl', function($scope, Member, $ionicPopup, $ionicHistory){
+  $scope.sendForget = function(email){
+    console.log(email);
+    Member.resetPw({'email': email}, function(value, responseheader){
+      console.log(value);
+      var alertPopup = $ionicPopup.alert({
+        title: 'Done',
+        template: 'Please check your email account.'
+      });
+      alertPopup.then(function(res) {
+        $ionicHistory.goBack();
+      });
 
+    }, function(error){
+
+      console.log(error);
+      var alertPopup = $ionicPopup.alert({
+        title: 'Error',
+        template: 'Email does not exist.'
+      });
+      alertPopup.then(function(res) {
+        $ionicHistory.goBack();
+      });
+    });
+  };
+
+  // Member.resetPassword({'email': 'testing@gmail.com'});
 })
 
 
@@ -321,4 +423,120 @@ angular.module('starter.controllers', [])
     })
     
   }
+
+  $scope.changePW = function(){
+    $state.go("tab.setting_change_PW");
+
+  }
+})
+
+.controller('changePWCtrl', function($scope, Member, $ionicHistory, $ionicPopup, $ionicLoading, loadingService){
+  
+  $scope.sendPW = function(){
+
+    loadingService.start($ionicLoading);
+    Member.updatePw({'oldpassword': this.info.oldpw, 'newpassword': this.info.newpw}, function(value, responseheader){
+      console.log(value);
+      if (value.status == 'fail'){
+        var alertPopup = $ionicPopup.alert({
+         title: 'Error',
+         template: 'Password cannot be changed.'
+       });
+       alertPopup.then(function(res) {
+       });
+       
+      }else{
+        var alertPopup = $ionicPopup.alert({
+           title: 'Done',
+           template: 'You can now use the new password.'
+        });
+        alertPopup.then(function(res) {
+           $ionicHistory.goBack();
+        });
+      }
+      loadingService.end($ionicLoading);
+
+    }, function(error){
+      var alertPopup = $ionicPopup.alert({
+         title: 'Error',
+         template: 'Password cannot be changed.'
+       });
+       alertPopup.then(function(res) {
+       });
+       loadingService.end($ionicLoading);
+
+    })
+
+  }
+
+
+})
+
+
+.controller('goustCtrl', function($scope, $ionicPopup){
+  $scope.ready = function(destination){
+    var confirmPopup = $ionicPopup.confirm({
+     title: 'Confirm',
+     template: 'Are you sure you are heading to HKUST through '+ destination +'?'
+   });
+
+   confirmPopup.then(function(res) {
+     if(res) {
+        console.log('You are sure');
+
+        // $scope.test();
+        Ride.addRide({
+        "license_number": $scope.licence,
+        "beforeArrive": $scope.time,
+        "seat_number": $scope.numOfPassenger,
+        "destination_name": destination
+        }, function(value, responseheaders){
+
+
+        }, function(error){
+
+        });
+        $state.go('tab.goust_ready',{"licence":$scope.licence,"minute":$scope.time,'location': destination, 'destination': "HKUST"});
+
+     } else {
+       return;
+     }
+   });
+
+
+  }
+
+  $scope.licences = licencesManager.getLicence();
+  $scope.licence = $scope.licences[$scope.licenceIndex];
+
+  $scope.time = 7;
+  $scope.modifyTime = function(value){
+    if ($scope.time + value > 0)
+      $scope.time = $scope.time + value;
+  }
+
+  $scope.numOfPassenger = 2;
+  $scope.modifyPassenger = function(value){
+    if ($scope.numOfPassenger + value > 0)
+      $scope.numOfPassenger += value;
+  }
+
+
+
+
+  $scope.licenceIndex = 0;
+  
+  $scope.changeLicence = function(value){
+    if ($scope.licenceIndex + value < 0)
+      $scope.licenceIndex = $scope.licences.length-1;
+    else if ($scope.licenceIndex + value >= $scope.licences.length)
+      $scope.licenceIndex = 0;
+    else
+      $scope.licenceIndex += value;
+    $scope.licence = $scope.licences[$scope.licenceIndex];
+  }
+
+
+
+
 });

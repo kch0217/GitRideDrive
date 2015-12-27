@@ -81,5 +81,28 @@ angular.module('starter.services', [])
 
 })
 
+  .service('licencesManager', function(Own){
+    this.licence = [];
+
+    this.getLicenceFromServer = function(callback){
+      Own.getVehicle(function(value, responseheaders){
+      console.log(value.vehicle);
+
+      this.licence = value.vehicle;
+      console.log(callback);
+      if (callback != null)
+        callback();
+    }, function(error){
+      console.log(error);
+
+    });
+    }
+
+    this.getLicence = function(){
+      return this.licence;
+    }
+
+  })
+
  
 ;

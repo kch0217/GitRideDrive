@@ -94,8 +94,8 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
       url: '/gohkust',
       views: {
         'tab-gohkust': {
-          templateUrl: 'templates/driver-chatroom.html',
-          controller: 'ChatsCtrl'
+          templateUrl: 'templates/driver-toust.html',
+          controller: 'goustCtrl'
         }
       }
     })
@@ -117,6 +117,17 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
         controller: 'SettingCtrl'
       }
     }
+  })
+
+    .state('tab.setting_change_PW',{
+    url: '/changePW',
+    views: {
+      'tab-setting':{
+        templateUrl: 'templates/changePassword.html',
+        controller: 'changePWCtrl'
+      }
+    }
+
   });
 
   // if none of the above states are matched, use this as the fallback
@@ -126,5 +137,5 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
 
 .config(function(LoopBackResourceProvider){
   // Change the URL where to access the LoopBack REST API server
-    LoopBackResourceProvider.setUrlBase('http://147.8.202.203:3000/api');
+    LoopBackResourceProvider.setUrlBase('http://175.159.231.31:3000/api');
 });
