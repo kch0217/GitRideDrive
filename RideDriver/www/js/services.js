@@ -81,15 +81,14 @@ angular.module('starter.services', [])
 
 })
 
-  .service('licencesManager', function(Own){
-    this.licence = [];
+  .service('licencesManager', function(Own ){
+
+    var licence = [];
+    
 
     this.getLicenceFromServer = function(callback){
       Own.getVehicle(function(value, responseheaders){
-      console.log(value.vehicle);
-
-      this.licence = value.vehicle;
-      console.log(callback);
+      licence = value.vehicle;
       if (callback != null)
         callback();
     }, function(error){
@@ -99,7 +98,7 @@ angular.module('starter.services', [])
     }
 
     this.getLicence = function(){
-      return this.licence;
+      return licence;
     }
 
   })
