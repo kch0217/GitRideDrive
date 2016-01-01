@@ -29,13 +29,15 @@ angular.module('starter.controllers', [])
 
 
 
-.controller('signCtrl', function($scope, $state, Member,$ionicPopup, loadingService, $ionicLoading, LoopBackAuth, userRegister, pushRegister, $ionicHistory){
+.controller('signCtrl', function($scope, $state, Member,$ionicPopup, loadingService, $ionicLoading, LoopBackAuth, userRegister, pushRegister, $ionicHistory, $localstorage){
 
-  $scope.signin = function(){
+  $scope.signin = function(info){
     console.log('Test');
     loadingService.start($ionicLoading);
+    console.log(info.email);
+    console.log(info.password);
     
-    Member.login({"email": this.email, "password": this.password}, function(content, code){
+    Member.login({"email": info.email, "password": info.password}, function(content, code){
       //success
       userRegister.register();
       pushRegister.register();
@@ -46,6 +48,7 @@ angular.module('starter.controllers', [])
 
       // });
       loadingService.end($ionicLoading);
+      $localstorage.setObject('userInfo',{'email':info.email, 'pw': info.password});
       $state.go('tab.gohome',{},{reload:true});
     }, function(error){
       //fail
@@ -71,6 +74,14 @@ angular.module('starter.controllers', [])
   $scope.$on("$ionicView.enter", function(scopes, states){
     $ionicHistory.clearHistory();
     $ionicHistory.clearCache();
+    var user = $localstorage.getObject('userInfo');
+    if (user == null)
+      return;
+    if (!(user.email ==null || user.pw == null)){
+      $scope.signin({"email": user.email, "password": user.pw});
+    }
+
+    console.log("Go to login page");
   });
 
 
@@ -184,7 +195,7 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('goHomeCtrl',function($scope, $state, $ionicHistory, Ride, Own, Request, $ionicPopup, Member, pushRegister, licencesManager){
+.controller('goHomeCtrl',function($scope, $state, $ionicHistory, Ride, Own, Request, $ionicPopup, Member, pushRegister, licencesManager, $localstorage){
   $scope.ready = function(destination){
     var confirmPopup = $ionicPopup.confirm({
      title: 'Confirm',
@@ -200,11 +211,16 @@ angular.module('starter.controllers', [])
         else
         $scope.pickUpPt = $scope.pickUpPts[1];
         // $scope.test();
+        var targetTime = new Date();
+        targetTime.setMinutes(parseInt(targetTime.getMinutes())+ $scope.time);
+        // console.log(targetTime.toJSON());
+        console.log(targetTime);
         Ride.addRide({
         "license_number": $scope.licence,
         "beforeArrive": $scope.time,
         "seat_number": $scope.numOfPassenger,
-        "destination_name": destination
+        "destination_name": destination,
+        "time": targetTime.toJSON()
         }, function(value, responseheaders){
   //test
         // console.log(value.status);
@@ -260,6 +276,7 @@ angular.module('starter.controllers', [])
        alertPopup.then(function(res) {
           Member.logout({}, function(value, responseheader){
             pushRegister.unregister();
+            $localstorage.setObject('userInfo', null);
             $ionicHistory.goBack();
           }, function(error){
             console.log('fail to logout');
@@ -338,6 +355,12 @@ angular.module('starter.controllers', [])
   $scope.location = $stateParams.location;
   $scope.destination = $stateParams.destination;
 
+  var targetTime = new Date();
+  console.log($scope.time);
+  console.log(targetTime.getMinutes());
+  console.log(targetTime);
+  targetTime.setMinutes(parseInt(targetTime.getMinutes())+ parseInt($scope.time));
+  console.log(targetTime);
 
 
   $scope.goBack = function() {
@@ -365,7 +388,7 @@ angular.module('starter.controllers', [])
     if (timeInSec > 0){
       timeInSec--;
       var min = Math.floor(timeInSec/60);
-      var sec = timeInSec %60
+      var sec = Math.floor(timeInSec %60);
 
       if (sec <10)
         sec = '0' + sec;
@@ -412,10 +435,11 @@ angular.module('starter.controllers', [])
 
 
 
-.controller('SettingCtrl', function($scope, $ionicHistory, $state, Member, pushRegister){
+.controller('SettingCtrl', function($scope, $ionicHistory, $state, Member, pushRegister, $localstorage){
   $scope.logout = function(){
     Member.logout({}, function(value, responseheader){
       pushRegister.unregister();
+      $localstorage.setObject('userInfo', null);
       $state.go('signIn');
     }, function(error){
       console.log('fail to logout');
@@ -473,7 +497,7 @@ angular.module('starter.controllers', [])
 })
 
 
-.controller('goustCtrl', function($scope, $ionicPopup){
+.controller('goustCtrl', function($scope, $ionicPopup, Ride, licencesManager, $state){
   $scope.ready = function(destination){
     var confirmPopup = $ionicPopup.confirm({
      title: 'Confirm',
@@ -483,20 +507,23 @@ angular.module('starter.controllers', [])
    confirmPopup.then(function(res) {
      if(res) {
         console.log('You are sure');
-
-        // $scope.test();
+        var targetTime = new Date();
+        targetTime.setMinutes(parseInt(targetTime.getMinutes())+ $scope.time);
+        // console.log(targetTime.toJSON());
+        console.log(targetTime);
         Ride.addRide({
         "license_number": $scope.licence,
         "beforeArrive": $scope.time,
         "seat_number": $scope.numOfPassenger,
-        "destination_name": destination
+        "destination_name": destination,
+        "time": targetTime.toJSON()
         }, function(value, responseheaders){
 
 
         }, function(error){
 
         });
-        $state.go('tab.goust_ready',{"licence":$scope.licence,"minute":$scope.time,'location': destination, 'destination': "HKUST"});
+        $state.go('tab.gohome_ready',{"licence":$scope.licence,"minute":$scope.time,'location': destination, 'destination': "HKUST"});
 
      } else {
        return;
@@ -505,6 +532,8 @@ angular.module('starter.controllers', [])
 
 
   }
+
+  $scope.licenceIndex = 0;
 
   $scope.licences = licencesManager.getLicence();
   $scope.licence = $scope.licences[$scope.licenceIndex];
@@ -524,7 +553,7 @@ angular.module('starter.controllers', [])
 
 
 
-  $scope.licenceIndex = 0;
+  
   
   $scope.changeLicence = function(value){
     if ($scope.licenceIndex + value < 0)
