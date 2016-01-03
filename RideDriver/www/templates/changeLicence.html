@@ -24,7 +24,7 @@
       Edit
     </ion-option-button>
     <ion-delete-button class="ion-minus-circled"
-                       ng-click="carInfo.splice($index, 1)">
+                       ng-click="carInfo.splice($index, 1); copyToPending(); deleteStatus(); updatelist();">
     </ion-delete-button>
       </ion-item>
       <ion-item ng-click="edit(-1)">

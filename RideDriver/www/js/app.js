@@ -68,12 +68,12 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
   })
 
   .state('tab.gohome_ready', {
-    url: '/gohome/ready/:licence/:minute/:location/:destination',
+    url: '/gohome/ready/:licence/:minute/:location/:destination/:matchicon',
     views: {
       'tab-gohome': {
         templateUrl: 'templates/driver-leave2.html',
         controller: 'goHomeMatchCtrl',
-        params: ['licence','minute','location','destination']
+        params: ['licence','minute','location','destination', 'matchicon']
       }
     }
   })
@@ -148,4 +148,6 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
 .config(function(LoopBackResourceProvider){
   // Change the URL where to access the LoopBack REST API server
     LoopBackResourceProvider.setUrlBase('http://ridesharingfyp.ddns.net:3000/api');
+    // LoopBackResourceProvider.setUrlBase('http://147.8.202.247:3000/api');
+
 });

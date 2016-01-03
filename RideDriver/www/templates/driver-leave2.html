@@ -3,7 +3,7 @@
 <div class="list card">
 
   <div class="item" >
-  	<center style="font-size: 30px"><i class="icon ion-model-s"></i>
+  	<center style="font-size: 20px"><i class="icon ion-model-s"></i>
   
    	{{licence}}
    	</center>
@@ -28,7 +28,7 @@
   </div>
 
   <div class="item" >
-  	<center style="font-size: 30px"><i class="icon ion-ios-time-outline" ng-init="countdown()"></i>
+  	<center style="font-size: 20px"><i class="icon ion-ios-time-outline" ng-init="countdown()"></i>
   
    	<timer time="time"></timer>
    	</center>
@@ -58,7 +58,7 @@
   </div>
 
   <div class="item">
-    <CENTER> <img src="http://placehold.it/350x150"></CENTER>
+    <CENTER> <img ng-src="{{imglocation}}"></CENTER>
   </div>
 </div>
 
@@ -96,13 +96,12 @@
 </div> -->
 
 
-
   </ion-content>
-<!--   <ion-footer-bar class="bar-assertive" ng-click="goBack()">
+  <ion-footer-bar class="bar-balanced" ng-click="goBack()" ng-if="doneCounting">
 
-  <h1 class="title">Cancel</h1>
+  <h1 class="title">Finish</h1>
 
-</ion-footer-bar> -->
+</ion-footer-bar>
 
 </ion-view>
 

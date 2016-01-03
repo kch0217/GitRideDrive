@@ -44,7 +44,7 @@ angular.module('starter.services', [])
   var user = Ionic.User.current();
 
   var push = new Ionic.Push({
-    "debug": true,
+    "debug": false,
     'onNotification': function(notification) {
       // var payload = notification.payload;
       console.log(notification);

@@ -241,12 +241,13 @@ angular.module('starter.controllers', [])
         // }, function(error){
         //   console.log(error);
         // });
-
-
+          console.log(value);
+          console.log(value.status.matchicon);
+          $state.go('tab.gohome_ready',{"licence":$scope.licence,"minute":$scope.time,'location': $scope.pickUpPt, 'destination': destination, 'matchicon': value.status.matchicon});
         }, function(error){
 
         });
-        $state.go('tab.gohome_ready',{"licence":$scope.licence,"minute":$scope.time,'location': $scope.pickUpPt, 'destination': destination});
+        
 
      } else {
        return;
@@ -263,7 +264,7 @@ angular.module('starter.controllers', [])
 
   $scope.time = 7;
   $scope.modifyTime = function(value){
-    if ($scope.time + value > 0)
+    if ($scope.time + value > 1)
       $scope.time = $scope.time + value;
   }
 
@@ -361,11 +362,14 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('goHomeMatchCtrl', function($scope, $stateParams, $ionicHistory, $state){
+.controller('goHomeMatchCtrl', function($scope, $stateParams, $ionicHistory, $state, $timeout){
   $scope.licence = $stateParams.licence;
   $scope.time = $stateParams.minute;
   $scope.location = $stateParams.location;
   $scope.destination = $stateParams.destination;
+  $scope.matchicon = parseInt($stateParams.matchicon);
+  $scope.doneCounting = false;
+
 
   var targetTime = new Date();
   console.log($scope.time);
@@ -384,6 +388,20 @@ angular.module('starter.controllers', [])
   $scope.chat = function(){
     $state.go('tab.gohome_chat',{'id':'012'});
   }
+
+  $scope.countDownFinish = function(){
+    $scope.doneCounting = true;
+  }
+
+  $scope.$on("$ionicView.enter", function(scopes, states){
+    if($scope.matchicon < 10)
+      $scope.imglocation = "img/icon_00" + $scope.matchicon + ".png";
+    else
+      $scope.imglocation = "img/icon_0" + $scope.matchicon + ".png";
+
+    $scope.counter = $timeout($scope.countDownFinish, 1000*60*$scope.time);
+    
+  });
 
 
 
@@ -623,18 +641,20 @@ angular.module('starter.controllers', [])
 })
 
 
-.controller("modifyLicenceCtrl", function($scope, $ionicModal, licencesManager){
+.controller("modifyLicenceCtrl", function($scope, $ionicModal, licencesManager, Member){
   //should be obtained from server
 
   // $scope.carInfo = [{"license_number": "AX123", "color": "red", "maker": "world"},
   //                   {"license_number": "B2331", "color": "yellow", "maker": "Toy"}];
   $scope.carInfo = licencesManager.getAll();
-  console.log($scope.carInfo);
+  
 
 
   $scope.setting = { "showDelete" : false};
 
   $scope.selected = -1;
+
+  $scope.deleting =false;
 
 
 
@@ -650,11 +670,12 @@ angular.module('starter.controllers', [])
     console.log("press edit");
     $scope.selected = carIndex;
 
-    $scope.chosen = {"license_number": "", "color": "", "maker": ""};
+    $scope.chosen = {"license_number": "", "color": "", "maker": "", "id": null};
     if (carIndex != -1){
       $scope.chosen.license_number = $scope.carInfo[$scope.selected].license_number;
       $scope.chosen.color = $scope.carInfo[$scope.selected].color;
       $scope.chosen.maker = $scope.carInfo[$scope.selected].maker;
+      $scope.chosen.id = $scope.carInfo[$scope.selected].id;
       $scope.action = "Edit";
     } else {
       $scope.action = "Create";
@@ -669,25 +690,88 @@ angular.module('starter.controllers', [])
 
   $scope.confirm = function(){
     console.log($scope.carInfo);
-    if ($scope.selected != -1){
-      $scope.carInfo[$scope.selected].license_number = $scope.chosen.license_number;
-      $scope.carInfo[$scope.selected].color = $scope.chosen.color;
-      $scope.carInfo[$scope.selected].maker = $scope.chosen.maker;
-    }else
-    {
-      $scope.carInfo.push($scope.chosen);
-      $scope.chosen = {"license_number": "", "color": "", "maker": ""};
-      // $scope.chosen.license_number = "";
-      // $scope.chosen.color = "";
-      // $scope.chosen.maker = "";
-    }
-    // Member.updateVehicle(,function(){
+    $scope.copyToPending();
+    $scope.updateLocalList();
+  }
 
-    // }, function(){
-
-    // });
-    $scope.selected = -1;
+  $scope.copyToPending = function(){
     console.log($scope.carInfo);
+    $scope.pendingcarInfo = [];
+    for (var i=0; i< $scope.carInfo.length; i++){
+
+      var aRecord = {"id": $scope.carInfo[i].id, "license_number": $scope.carInfo[i].license_number, "color": $scope.carInfo[i].color, "maker": $scope.carInfo[i].maker};
+      console.log(aRecord);
+      $scope.pendingcarInfo.push(aRecord);
+    }
+
+    console.log($scope.pendingcarInfo);
+
+
+  }
+
+  $scope.updateLocalList = function(){
+    if ($scope.selected != -1){
+
+        $scope.pendingcarInfo[$scope.selected].license_number = $scope.chosen.license_number;
+        $scope.pendingcarInfo[$scope.selected].color = $scope.chosen.color;
+        $scope.pendingcarInfo[$scope.selected].maker = $scope.chosen.maker;
+        console.log($scope);
+      }else
+      {
+        $scope.pendingcarInfo.push($scope.chosen);
+        
+        // $scope.chosen.license_number = "";
+        // $scope.chosen.color = "";
+        // $scope.chosen.maker = "";
+      }
+      
+      
+      console.log($scope.pendingcarInfo);
+      $scope.updatelist();
+      
+
+  }
+
+  $scope.deleteStatus = function(){
+    $scope.deleting = true;
+  }
+
+  $scope.verifyDeleteEmpty = function(){
+    if ($scope.carInfo.length ==1){
+      return false;
+    }
+  }
+
+  $scope.updatelist = function(){
+    console.log($scope.pendingcarInfo);
+    Member.updateVehicle($scope.pendingcarInfo,function(value, responseheader){
+      console.log(value);
+      if (value.status =="fail"){
+        
+        return false;
+      }
+      else{
+
+        $scope.carInfo = $scope.pendingcarInfo;
+        console.log($scope.deleting);
+        if ($scope.selected == -1 && $scope.deleting ==false){
+          $scope.carInfo[$scope.carInfo.length-1].id = Number(value.status);
+        }
+        
+        
+        $scope.chosen = {"license_number": "", "color": "", "maker": "", "id": null};
+        $scope.closeModal();
+        $scope.selected = -1;
+        $scope.deleting =false;
+        console.log($scope.carInfo);
+        licencesManager.getLicenceFromServer(null);
+        return true;
+        
+      }
+        
+    }, function(error){
+
+    });
   }
 
   $scope.$on('$destroy', function() {
