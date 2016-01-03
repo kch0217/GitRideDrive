@@ -47,9 +47,19 @@ angular.module('starter.controllers', [])
       // }, function(error){
 
       // });
-      loadingService.end($ionicLoading);
       $localstorage.setObject('userInfo',{'email':info.email, 'pw': info.password});
-      $state.go('tab.gohome',{},{reload:true});
+      
+      Member.getGenderPreference(function(value, responseheader){
+        loadingService.end($ionicLoading);
+        $localstorage.set('genderPreference', value.status);
+        $state.go('tab.gohome');
+      }, function(error){
+        console.log(error);
+        loadingService.end($ionicLoading);
+      });
+      
+      
+
     }, function(error){
       //fail
       loadingService.end($ionicLoading);
@@ -215,12 +225,14 @@ angular.module('starter.controllers', [])
         targetTime.setMinutes(parseInt(targetTime.getMinutes())+ $scope.time);
         // console.log(targetTime.toJSON());
         console.log(targetTime);
+        $scope.genderPreferred = $localstorage.get("genderPreference", "false");
         Ride.addRide({
         "license_number": $scope.licence,
         "beforeArrive": $scope.time,
         "seat_number": $scope.numOfPassenger,
         "destination_name": destination,
-        "time": targetTime.toJSON()
+        "time": targetTime.toJSON(),
+        "gender_preference": ($scope.genderPreferred === "true")
         }, function(value, responseheaders){
   //test
         // console.log(value.status);
@@ -440,7 +452,9 @@ angular.module('starter.controllers', [])
     Member.logout({}, function(value, responseheader){
       pushRegister.unregister();
       $localstorage.setObject('userInfo', null);
+      $localstorage.set('genderPreference', null);
       $state.go('signIn');
+
     }, function(error){
       console.log('fail to logout');
 
@@ -448,11 +462,42 @@ angular.module('starter.controllers', [])
     
   }
 
+  $scope.setting = {"sameGender": false}
+
   $scope.changePW = function(){
     $state.go("tab.setting_change_PW");
 
   }
+
+  $scope.changeCar = function(){
+    $state.go("tab.setting_change_car");
+  }
+
+  $scope.saveSettings = function(genderPreferred){
+    console.log(genderPreferred);
+    $localstorage.set('genderPreference', genderPreferred);
+    Member.setGenderPreference({'gender_preference': genderPreferred}, function(value, responseheader){
+      console.log(value);
+    }, function(error){
+
+    });
+  }
+
+  $scope.$on("$ionicView.enter", function(scopes, states){
+
+    $scope.setting.sameGender = $localstorage.get('genderPreference', "false");
+    if ($scope.setting.sameGender == null){
+      $scope.setting.sameGender = "false";
+      console.log("null gender preference");
+    }
+    if ($scope.setting.sameGender ==="true")
+      $scope.setting.sameGender = true;
+    else
+      $scope.setting.sameGender = false;
+    
+  });
 })
+
 
 .controller('changePWCtrl', function($scope, Member, $ionicHistory, $ionicPopup, $ionicLoading, loadingService){
   
@@ -567,5 +612,71 @@ angular.module('starter.controllers', [])
 
 
 
+
+})
+
+
+.controller("modifyLicenceCtrl", function($scope, $ionicModal, licencesManager){
+  //should be obtained from server
+
+  // $scope.carInfo = [{"license_number": "AX123", "color": "red", "maker": "world"},
+  //                   {"license_number": "B2331", "color": "yellow", "maker": "Toy"}];
+  $scope.carInfo = licencesManager.getAll();
+
+
+  $scope.setting = { "showDelete" : false};
+
+  $scope.selected = -1;
+
+
+
+  $ionicModal.fromTemplateUrl('templates/editACarModal.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.modal = modal
+  })  
+
+  $scope.action = "";
+  $scope.edit = function(carIndex) {
+    console.log("press edit");
+    $scope.selected = carIndex;
+
+    $scope.chosen = {"license_number": "", "color": "", "maker": ""};
+    if (carIndex != -1){
+      $scope.chosen.license_number = $scope.carInfo[$scope.selected].license_number;
+      $scope.chosen.color = $scope.carInfo[$scope.selected].color;
+      $scope.chosen.maker = $scope.carInfo[$scope.selected].maker;
+      $scope.action = "Edit";
+    } else {
+      $scope.action = "Create";
+    }
+
+    $scope.modal.show();
+  }
+
+  $scope.closeModal = function() {
+    $scope.modal.hide();
+  };
+
+  $scope.confirm = function(){
+    console.log($scope.carInfo);
+    if ($scope.selected != -1){
+      $scope.carInfo[$scope.selected].license_number = $scope.chosen.license_number;
+      $scope.carInfo[$scope.selected].color = $scope.chosen.color;
+      $scope.carInfo[$scope.selected].maker = $scope.chosen.maker;
+    }else
+    {
+      $scope.carInfo.push($scope.chosen);
+      $scope.chosen.license_number = "";
+      $scope.chosen.color = "";
+      $scope.chosen.maker = "";
+    }
+    $scope.selected = -1;
+  }
+
+  $scope.$on('$destroy', function() {
+    $scope.modal.remove();
+  });
 
 });

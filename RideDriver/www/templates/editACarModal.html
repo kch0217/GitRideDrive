@@ -1,0 +1,50 @@
+<ion-modal-view>
+<!--   <ion-header-bar>
+    <button class="button-clear" ng-click="closeModal()">Close</button>
+    <h1 class="title">Edit Your Car</h1>
+    <button class="button-clear" style="float:right" ng-click="confirm(); closeModal();">Save</button>
+  </ion-header-bar> -->
+  <ion-nav-bar class="bar-balanced">
+      <ion-nav-title>
+      {{action}} Your Car
+    </ion-nav-title>
+    <ion-nav-buttons side="primary">
+    <div class="buttons">
+      <button class="button" ng-click="closeModal()">
+        Close
+      </button></div>
+    </ion-nav-buttons>
+    <ion-nav-buttons side="secondary">
+    <div class="buttons">
+      <button class="button" ng-click="confirm(); closeModal();">
+        Save
+      </button></div>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+  <ion-content>
+  <br/><br/>
+
+  <form name="carForm">
+    <label class="item item-divider" ng-if="action == 'Edit'">Car Licence Number: {{chosen.license_number}}</label>
+    <label class="item item-input item-stacked-label" ng-if="action == 'Create'">
+      <span class="input-label">Car licence number</span>
+      <input type="text" placeholder="" ng-model="chosen.license_number" required name="license_number">
+    </label>
+    <label class="item item-input item-stacked-label">
+      <span class="input-label">Color</span>
+      <input type="text" placeholder="" ng-model="chosen.color" required name="color">
+    </label>
+
+    <label class="item item-input item-stacked-label">
+      <span class="input-label">Manufacturer</span>
+      <input type="text" placeholder="" ng-model="chosen.maker" required name="maker">
+    </label>
+
+
+  </form>
+
+
+</ion-content>
+
+
+</ion-modal-view>

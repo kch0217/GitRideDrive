@@ -1,31 +1,34 @@
-<ion-view view-title="Change Licence">
+<ion-view view-title="Manage your car">
+<ion-nav-bar class="bar-balanced">
+    <ion-nav-buttons side="secondary">
+    <div class="buttons">
+      <button class="button" ng-click="setting.showDelete = !setting.showDelete;">
+        Delete
+      </button></div>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+
   <ion-content padding="true" class="has-header">
 
-    <form name="myForm">
-      <label class="item item-input item-stacked-label">
-          <span class="input-label">Old Password</span>
-          <div style="color:red" ng-show="myForm.oldpw.$dirty && myForm.oldpw.$error.required">
-              Password is required
-          </div>
-          <input type="password" placeholder="" name="oldpw" ng-model="info.oldpw" required>
+    <ion-list show-delete="setting.showDelete" type="card">
+      <ion-item ng-repeat="car in carInfo">
+      {{car.license_number}}
+      <span class="item-note">
+      Swipe left to edit this car
+      </span>
+      <ion-option-button class="button-calm"
+                       ng-click="edit($index)">
+      Edit
+    </ion-option-button>
+    <ion-delete-button class="ion-minus-circled"
+                       ng-click="carInfo.splice($index, 1)">
+    </ion-delete-button>
+      </ion-item>
+      <ion-item ng-click="edit(-1)">
+      Create a new car
+    </ion-item>
 
-      </label>
-      <label class="item item-input item-stacked-label">
-          <span class="input-label">New Password</span>
-          <div style="color:red" ng-show="myForm.password.$dirty && myForm.password.$error.required">
-              Password is required
-          </div>
-          <input type="password" placeholder="" name="password" ng-model="info.newpw" required>
-      </label>
-      <label class="item item-input item-stacked-label">
-          <span class="input-label">Retype New Password</span>
-          <div style="color:red" ng-show="myForm.password2.$dirty && myForm.password2.$error.compareTo">
-          Incorrect password
-          </div>
-          <input type="password" placeholder="" name="password2" ng-model="info.newpw2" required compare-to="info.newpw">
-      </label>
-      <button class="button button-balanced button-block" ng-disabled="myForm.$error.required || myForm.$error.compareTo" ng-click="sendPW()" style="border-radius: 18px;">Submit</button>
-    </form>
+    </ion-list>
   </ion-content>
 
 </ion-view>
