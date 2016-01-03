@@ -448,6 +448,10 @@ angular.module('starter.controllers', [])
 
 
 .controller('SettingCtrl', function($scope, $ionicHistory, $state, Member, pushRegister, $localstorage){
+  
+
+
+
   $scope.logout = function(){
     Member.logout({}, function(value, responseheader){
       pushRegister.unregister();
@@ -494,6 +498,9 @@ angular.module('starter.controllers', [])
       $scope.setting.sameGender = true;
     else
       $scope.setting.sameGender = false;
+
+    var user = $localstorage.getObject('userInfo');
+    $scope.username = user.email;
     
   });
 })
@@ -622,6 +629,7 @@ angular.module('starter.controllers', [])
   // $scope.carInfo = [{"license_number": "AX123", "color": "red", "maker": "world"},
   //                   {"license_number": "B2331", "color": "yellow", "maker": "Toy"}];
   $scope.carInfo = licencesManager.getAll();
+  console.log($scope.carInfo);
 
 
   $scope.setting = { "showDelete" : false};
@@ -668,11 +676,18 @@ angular.module('starter.controllers', [])
     }else
     {
       $scope.carInfo.push($scope.chosen);
-      $scope.chosen.license_number = "";
-      $scope.chosen.color = "";
-      $scope.chosen.maker = "";
+      $scope.chosen = {"license_number": "", "color": "", "maker": ""};
+      // $scope.chosen.license_number = "";
+      // $scope.chosen.color = "";
+      // $scope.chosen.maker = "";
     }
+    // Member.updateVehicle(,function(){
+
+    // }, function(){
+
+    // });
     $scope.selected = -1;
+    console.log($scope.carInfo);
   }
 
   $scope.$on('$destroy', function() {
