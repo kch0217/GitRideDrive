@@ -155,17 +155,23 @@ angular.module('starter.controllers', [])
                         "last_name": $scope.info.lastname,
                         "phone_number": parseInt($scope.info.phonenumber),
                         "gender": $scope.info.gender,
-                        "gender_preference": 'no',
+                        "gender_preference": 0,
                         "authorized": 'no',
                         "isDriver": $scope.numOfCar>0? 'yes': 'no',
                         "email": $scope.info.email,
                         "password": $scope.info.password,
                         "car": $scope.info.carNo
                       };
+      console.log(datasent);
 
       Member.validationandregister(datasent, function(content, responseheader){
         console.log(content);
         if (content.status =='success'){
+          Member.register(datasent, function(value, responseheader){
+            console.log(value);
+          }, function(error){
+
+          });
           var alertPopup = $ionicPopup.alert({
            title: 'Done',
            template: 'Please activate your account from your email.'
