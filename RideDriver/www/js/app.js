@@ -150,4 +150,32 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
     LoopBackResourceProvider.setUrlBase('http://ridesharingfyp.ddns.net:3000/api');
     // LoopBackResourceProvider.setUrlBase('http://147.8.202.247:3000/api');
 
+})
+
+
+
+.config(function($httpProvider) {
+  $httpProvider.interceptors.push(function($rootScope) {
+    return {
+      request: function(config) {
+        $rootScope.$broadcast('loading:show')
+        return config
+      },
+      response: function(response) {
+        $rootScope.$broadcast('loading:hide')
+        return response
+      }
+    }
+  })
+})
+
+
+.run(function($rootScope, $ionicLoading) {
+  $rootScope.$on('loading:show', function() {
+    $ionicLoading.show({template: 'Loading...'})
+  })
+
+  $rootScope.$on('loading:hide', function() {
+    $ionicLoading.hide()
+  })
 });
