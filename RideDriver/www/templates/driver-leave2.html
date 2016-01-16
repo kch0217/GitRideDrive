@@ -97,6 +97,12 @@
 
 
   </ion-content>
+
+    <ion-footer-bar class="bar-assertive" ng-click="cancelOffer()" ng-if="!doneCounting">
+
+  <h1 class="title">Cancel</h1>
+
+</ion-footer-bar>
   <ion-footer-bar class="bar-balanced" ng-click="goBack()" ng-if="doneCounting">
 
   <h1 class="title">Finish</h1>

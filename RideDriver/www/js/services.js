@@ -89,6 +89,7 @@ angular.module('starter.services', [])
     this.getLicenceFromServer = function(callback){
       Own.getVehicle(function(value, responseheaders){
       car = value.vehicle;
+      console.log(value);
       if (callback != null)
         callback();
     }, function(error){
@@ -126,6 +127,90 @@ angular.module('starter.services', [])
       return JSON.parse($window.localStorage[key] || '{}');
     }
   }
-}]);
+}])
+
+
+
+.factory('commonCallback', function($q){
+  return {
+    defaultHandling: function(promise){
+
+      var deferred = $q.defer();
+      promise.then(function(value, responseHeaders){
+        deferred.resolve(value);
+      }, function(error){
+        deferred.reject(error);
+      });
+
+      return deferred.promise;
+    }, 
+
+    emptyErrorHandling: function(){
+      var deferred = $q.defer();
+      deferred.reject('early exit!');
+      return deferred.promise;
+    },
+
+    success: function(value, responseHeaders){
+      var deferred = $q.defer();
+      deferred.resolve(value);
+      return deferred.promise;
+    },
+    error: function(error){
+      var deferred = $q.defer();
+      deferred.resolve(error);
+      return deferred.promise;
+    }
+  }
+
+})
+
+.factory('LoginService', function(Member, commonCallback){
+
+
+
+
+  return {
+    login: function(info){
+
+      var promise = Member.login({"email": info.email, "password": info.password}).$promise;
+
+      return commonCallback.defaultHandling(promise);
+    },
+
+    getGenderPreference: function(){
+
+      var promise = Member.getGenderPreference().$promise;
+
+
+
+      return commonCallback.defaultHandling(promise);
+    },
+
+    validation: function(datasent){
+      var promise = Member.validationandregister(datasent).$promise;
+
+      return commonCallback.defaultHandling(promise);
+    },
+
+    register: function(datasent){
+      var promise = Member.register(datasent).$promise;
+
+      return commonCallback.defaultHandling(promise);
+    }
+
+  }
+
+})
+
+.factory('RideRequestService', function(Ride, Request, commonCallback){
+  return{
+    addRide: function(info){
+      var promise = Ride.addRide(info).$promise;
+
+      return commonCallback.defaultHandling(promise);
+    }
+  }
+});
 
  

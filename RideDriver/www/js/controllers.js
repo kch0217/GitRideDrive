@@ -1,68 +1,24 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope) {})
-
-.controller('ChatsCtrl', function($scope, Chats) {
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
-
-  $scope.chats = Chats.all();
-  $scope.remove = function(chat) {
-    Chats.remove(chat);
-  };
-})
-
-.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
-  $scope.chat = Chats.get($stateParams.chatId);
-})
-
-.controller('AccountCtrl', function($scope) {
-  $scope.settings = {
-    enableFriends: true
-  };
-})
-
-
-
-.controller('signCtrl', function($scope, $state, Member,$ionicPopup, loadingService, $ionicLoading, LoopBackAuth, userRegister, pushRegister, $ionicHistory, $localstorage){
+.controller('signCtrl', function($scope, $state,$ionicPopup, LoopBackAuth, userRegister, pushRegister, $ionicHistory, $localstorage, LoginService, $ionicLoading, loadingService){
 
   $scope.signin = function(info){
-    console.log('Test');
     loadingService.start($ionicLoading);
+    console.log('Test');
     console.log(info.email);
     console.log(info.password);
-    
-    Member.login({"email": info.email, "password": info.password}, function(content, code){
-      //success
+
+    LoginService.login(info).then(function(value){
       userRegister.register();
       pushRegister.register();
-      // console.log(pushRegister.token);
-      // Member.updateToken(pushRegister.token, function(value, responseheaders){
-      //   console.log(value);
-      // }, function(error){
-
-      // });
       $localstorage.setObject('userInfo',{'email':info.email, 'pw': info.password});
-      
-      Member.getGenderPreference(function(value, responseheader){
-        loadingService.end($ionicLoading);
-        $localstorage.set('genderPreference', value.status);
-        $state.go('tab.gohome');
-      }, function(error){
-        console.log(error);
-        loadingService.end($ionicLoading);
-      });
-      
-      
 
-    }, function(error){
-      //fail
-      loadingService.end($ionicLoading);
+      return LoginService.getGenderPreference();
+
+    }).then(function(value){
+      $localstorage.set('genderPreference', value.status);
+      $state.go('tab.gohome');
+    }).catch(function(error){
       var alertPopup = $ionicPopup.alert({
         title: 'Error',
         template: 'Unable to login'
@@ -70,10 +26,10 @@ angular.module('starter.controllers', [])
       alertPopup.then(function(res) {
         console.log('Error to login');
       });
+    }).finally(function(){
+      loadingService.end($ionicLoading);
     });
 
-//to be deleted
-    // $state.go('tab.gohome',{},{reload:true});
     
   }
 
@@ -98,7 +54,7 @@ angular.module('starter.controllers', [])
 })
 
 
-.controller('registerCtrl',function($scope, $ionicPopup, $ionicHistory, Member){
+.controller('registerCtrl',function($scope, $ionicPopup, $ionicHistory, LoginService, commonCallback, $ionicLoading, loadingService){
   $scope.numOfCar = 0;
   $scope.carLicence = [];
   $scope.info = { 'carNo':[],'gender': 'male'}
@@ -140,18 +96,15 @@ angular.module('starter.controllers', [])
 
   $scope.confirm = function(){
     // A confirm dialog
+    loadingService.end($ionicLoading);
     console.log($scope.info.carNo);
 
-   var confirmPopup = $ionicPopup.confirm({
+    var confirmPopup = $ionicPopup.confirm({
      title: 'Confirm you application',
      template: 'Do you want to submit the data?'
-   });
-   confirmPopup.then(function(res) {
-     if(res) {
-       //submit
+    });
 
-
-       var datasent = { "first_name": $scope.info.firstname,
+    var datasent = { "first_name": $scope.info.firstname,
                         "last_name": $scope.info.lastname,
                         "phone_number": parseInt($scope.info.phonenumber),
                         "gender": $scope.info.gender,
@@ -162,42 +115,53 @@ angular.module('starter.controllers', [])
                         "password": $scope.info.password,
                         "car": $scope.info.carNo
                       };
+
+    confirmPopup.then(function(res) {
+      console.log(res);
+      if(res) {
+       //submit
+
+
+       
       console.log(datasent);
 
-      Member.validationandregister(datasent, function(content, responseheader){
-        console.log(content);
-        if (content.status =='success'){
-          Member.register(datasent, function(value, responseheader){
-            console.log(value);
-          }, function(error){
+      return LoginService.validation(datasent);
 
-          });
-          var alertPopup = $ionicPopup.alert({
+
+      } else {
+      return commonCallback.emptyErrorHandling();  
+      }
+
+    }).then(function(value){
+      console.log(value);
+      if (value.status =='success'){
+
+      return LoginService.register(datasent);
+      }
+      else{
+        var alertPopup = $ionicPopup.alert({
+          title: 'Error',
+          template: 'Please check your information.'
+        });
+        alertPopup.then(function(res) {
+        
+        });
+        return commonCallback.emptyErrorHandling();
+      }
+
+    }).then(function(value){
+      return $ionicPopup.alert({
            title: 'Done',
            template: 'Please activate your account from your email.'
-         });
-         alertPopup.then(function(res) {
-           $ionicHistory.goBack();
-         });
-       }else
-       {
-          var alertPopup = $ionicPopup.alert({
-           title: 'Error',
-           template: 'Please check your information.'
-         });
-         alertPopup.then(function(res) {
-           
-         });
-       }
-      }, function(error){
-        console.log(error);
+      });
 
-      })
-
-     } else {
-       
-     }
-   });
+    }).then(function(value){
+      $ionicHistory.goBack();
+    }).catch(function(error){
+      console.log(error);
+    }).finally(function(){
+      loadingService.end($ionicLoading);
+    });
 
 
   }
@@ -211,7 +175,7 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('goHomeCtrl',function($scope, $state, $ionicHistory, Ride, Own, Request, $ionicPopup, Member, pushRegister, licencesManager, $localstorage){
+.controller('goHomeCtrl',function($scope, $state, $ionicHistory, $ionicPopup, Member, pushRegister, licencesManager, $localstorage, commonCallback, RideRequestService){
   $scope.ready = function(destination){
     var confirmPopup = $ionicPopup.confirm({
      title: 'Confirm',
@@ -225,39 +189,35 @@ angular.module('starter.controllers', [])
           $scope.pickUpPt = $scope.pickUpPts[0];
         }
         else
-        $scope.pickUpPt = $scope.pickUpPts[1];
-        // $scope.test();
+          $scope.pickUpPt = $scope.pickUpPts[1];
+        
         var targetTime = new Date();
         targetTime.setMinutes(parseInt(targetTime.getMinutes())+ $scope.time);
         // console.log(targetTime.toJSON());
         console.log(targetTime);
         $scope.genderPreferred = $localstorage.get("genderPreference", "false");
-        Ride.addRide({
-        "license_number": $scope.licence,
-        "beforeArrive": $scope.time,
-        "seat_number": $scope.numOfPassenger,
-        "destination_name": destination,
-        "time": targetTime.toJSON(),
-        "gender_preference": ($scope.genderPreferred === "true")
-        }, function(value, responseheaders){
-  //test
-        // console.log(value.status);
-        // Request.push(value.status, function(value2, responseheaders){
-        //   console.log(value2);
-        // }, function(error){
-        //   console.log(error);
-        // });
-          console.log(value);
-          console.log(value.status.matchicon);
-          $state.go('tab.gohome_ready',{"licence":$scope.licence,"minute":$scope.time,'location': $scope.pickUpPt, 'destination': destination, 'matchicon': value.status.matchicon});
-        }, function(error){
 
-        });
+        var info = {
+          "license_number": $scope.licence,
+          "beforeArrive": $scope.time,
+          "seat_number": $scope.numOfPassenger,
+          "destination_name": destination,
+          "time": targetTime.toJSON(),
+          "gender_preference": ($scope.genderPreferred === "true")
+        };
+        return RideRequestService.addRide(info);
         
 
      } else {
-       return;
+       return commonCallback.emptyErrorHandling();
      }
+   }).then(function(value){
+    console.log(value);
+    console.log(value.status.matchicon);
+    $state.go('tab.gohome_ready',{"licence":$scope.licence,"minute":$scope.time,'location': $scope.pickUpPt, 'destination': destination, 'matchicon': value.status.matchicon});
+
+   }).catch(function(error){
+    console.log(error);
    });
 
 
@@ -311,31 +271,7 @@ angular.module('starter.controllers', [])
   licencesManager.getLicenceFromServer(checkVehicle);
 
 
-  
-  // Own.getVehicle(function(value, responseheaders){
-  //   console.log(value.vehicle);
-  //   if (value.vehicle.length==0){
-  //     var alertPopup = $ionicPopup.alert({
-  //        title: 'Error',
-  //        template: 'You should use the passenger version.'
-  //      });
-  //      alertPopup.then(function(res) {
-  //         Member.logout({}, function(value, responseheader){
-  //           pushRegister.unregister();
-  //           $ionicHistory.goBack();
-  //         }, function(error){
-  //           console.log('fail to logout');
 
-  //         })
-
-  //      });
-  //   }
-  //   $scope.licences = value.vehicle;
-  //   $scope.licence = $scope.licences[$scope.licenceIndex];
-  // }, function(error){
-  //   console.log(error);
-
-  // });
 
 
   $scope.licenceIndex = 0;
@@ -350,25 +286,14 @@ angular.module('starter.controllers', [])
     $scope.licence = $scope.licences[$scope.licenceIndex];
   }
 
-  //testing, should be loaded from server
+
   $scope.pickUpPts = [ "North Gate", "South Gate"];
-  // $scope.pickUpIndex = 0;
-  // $scope.pickUpPt = $scope.pickUpPts[$scope.pickUpIndex];
-  // $scope.changePickUpPt = function(value){
-  //   if ($scope.pickUpIndex + value < 0)
-  //     $scope.pickUpIndex = $scope.pickUpPts.length-1;
-  //   else if ($scope.pickUpIndex + value >= $scope.pickUpPts.length)
-  //     $scope.pickUpIndex = 0;
-  //   else
-  //     $scope.pickUpIndex += value;
-  //   $scope.pickUpPt = $scope.pickUpPts[$scope.pickUpIndex];
-  // }
 
 
 
 })
 
-.controller('goHomeMatchCtrl', function($scope, $stateParams, $ionicHistory, $state, $timeout){
+.controller('goHomeMatchCtrl', function($scope, $stateParams, $ionicHistory, $state, $timeout, Ride){
   $scope.licence = $stateParams.licence;
   $scope.time = $stateParams.minute;
   $scope.location = $stateParams.location;
@@ -390,6 +315,13 @@ angular.module('starter.controllers', [])
     console.log("Back");
     $ionicHistory.goBack();
   };
+
+  $scope.cancelOffer = function(){
+    Ride.cancelRide(function(value, response){
+      console.log(value);
+    });
+    $ionicHistory.goBack();
+  }
 
   $scope.chat = function(){
     $state.go('tab.gohome_chat',{'id':'012'});
@@ -583,28 +515,41 @@ angular.module('starter.controllers', [])
    confirmPopup.then(function(res) {
      if(res) {
         console.log('You are sure');
+        if (destination == 'Hang Hau'){
+          $scope.pickUpPt = $scope.pickUpPts[0];
+        }
+        else
+          $scope.pickUpPt = $scope.pickUpPts[1];
+        
         var targetTime = new Date();
         targetTime.setMinutes(parseInt(targetTime.getMinutes())+ $scope.time);
         // console.log(targetTime.toJSON());
         console.log(targetTime);
-        Ride.addRide({
-        "license_number": $scope.licence,
-        "beforeArrive": $scope.time,
-        "seat_number": $scope.numOfPassenger,
-        "destination_name": destination,
-        "time": targetTime.toJSON()
-        }, function(value, responseheaders){
+        $scope.genderPreferred = $localstorage.get("genderPreference", "false");
 
-
-        }, function(error){
-
-        });
-        $state.go('tab.gohome_ready',{"licence":$scope.licence,"minute":$scope.time,'location': destination, 'destination': "HKUST"});
+        var info = {
+          "license_number": $scope.licence,
+          "beforeArrive": $scope.time,
+          "seat_number": $scope.numOfPassenger,
+          "destination_name": destination,
+          "time": targetTime.toJSON(),
+          "gender_preference": ($scope.genderPreferred === "true")
+        };
+        return RideRequestService.addRide(info);
+        
 
      } else {
-       return;
+       return commonCallback.emptyErrorHandling();
      }
+   }).then(function(value){
+    console.log(value);
+    console.log(value.status.matchicon);
+    $state.go('tab.gohome_ready',{"licence":$scope.licence,"minute":$scope.time,'location': $scope.pickUpPt, 'destination': destination, 'matchicon': value.status.matchicon});
+
+   }).catch(function(error){
+    console.log(error);
    });
+
 
 
   }
@@ -662,6 +607,7 @@ angular.module('starter.controllers', [])
 
   $scope.deleting =false;
 
+//1 :add, 2: modify, 3: delete
 
 
   $ionicModal.fromTemplateUrl('templates/editACarModal.html', {
@@ -722,7 +668,8 @@ angular.module('starter.controllers', [])
         $scope.pendingcarInfo[$scope.selected].color = $scope.chosen.color;
         $scope.pendingcarInfo[$scope.selected].maker = $scope.chosen.maker;
         console.log($scope);
-      }else
+      }
+      else
       {
         $scope.pendingcarInfo.push($scope.chosen);
         
@@ -738,8 +685,9 @@ angular.module('starter.controllers', [])
 
   }
 
-  $scope.deleteStatus = function(){
+  $scope.deleteStatus = function(index){
     $scope.deleting = true;
+    $scope.selected = index;
   }
 
   $scope.verifyDeleteEmpty = function(){
@@ -750,7 +698,23 @@ angular.module('starter.controllers', [])
 
   $scope.updatelist = function(){
     console.log($scope.pendingcarInfo);
-    Member.updateVehicle($scope.pendingcarInfo,function(value, responseheader){
+    var flag;
+    var tobeSent;
+
+    if ($scope.action==="Edit" && !$scope.deleting){
+      flag = 2;
+      tobeSent = $scope.pendingcarInfo[$scope.selected];
+
+    } else if ($scope.action == "Create" && !$scope.deleting){
+      flag = 1;
+      tobeSent = $scope.pendingcarInfo[$scope.pendingcarInfo.length -1];
+    }
+    else{
+      flag = 3;
+      tobeSent = $scope.pendingcarInfo[$scope.selected];
+    }
+    console.log("Changin vehicle",  tobeSent);
+    Member.updateVehicle({ "flag": flag, "car": tobeSent },function(value, responseheader){
       console.log(value);
       if (value.status =="fail"){
         
@@ -769,6 +733,7 @@ angular.module('starter.controllers', [])
         $scope.closeModal();
         $scope.selected = -1;
         $scope.deleting =false;
+        $scope.action = "";
         console.log($scope.carInfo);
         licencesManager.getLicenceFromServer(null);
         return true;
