@@ -1,5 +1,5 @@
 <ion-view view-title="Manage your car">
-<ion-nav-bar class="bar-balanced">
+<!-- <ion-nav-bar class="bar-balanced">
 <ion-nav-back-button class="button-clear">
     <i class="ion-arrow-left-c"></i> Back
   </ion-nav-back-button>
@@ -9,7 +9,7 @@
         Delete
       </button></div>
     </ion-nav-buttons>
-  </ion-nav-bar>
+  </ion-nav-bar> -->
 
   <ion-content padding="true" class="has-header">
 
@@ -23,9 +23,10 @@
                        ng-click="edit($index)">
       Edit
     </ion-option-button>
-    <ion-delete-button class="ion-minus-circled"
-                       ng-click="carInfo.splice($index, 1); copyToPending(); deleteStatus($index); updatelist();">
-    </ion-delete-button>
+    <ion-option-button class="button-assertive"
+                       ng-click="copyToPending(); carInfo.splice($index, 1); deleteStatus($index); updatelist();">
+                       Delete
+    </ion-option-button>
       </ion-item>
       <ion-item ng-click="edit(-1)">
       Create a new car

@@ -103,11 +103,16 @@ angular.module('starter.services', [])
       for (var i = 0; i< car.length; i++){
         licence.push(car[i].license_number);
       }
+      console.log(car);
       return licence;
     }
 
     this.getAll = function(){
       return car;
+    }
+
+    this.modifyCarList = function(carInfo){
+      car = carInfo;
     }
 
   })

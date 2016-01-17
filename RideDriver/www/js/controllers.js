@@ -203,7 +203,8 @@ angular.module('starter.controllers', [])
           "seat_number": $scope.numOfPassenger,
           "destination_name": destination,
           "time": targetTime.toJSON(),
-          "gender_preference": ($scope.genderPreferred === "true")
+          "gender_preference": ($scope.genderPreferred === "true"),
+          "leaveUst": true
         };
         return RideRequestService.addRide(info);
         
@@ -289,6 +290,10 @@ angular.module('starter.controllers', [])
 
   $scope.pickUpPts = [ "North Gate", "South Gate"];
 
+  $scope.$on("$ionicView.enter", function(scopes, states){
+    $scope.licences = licencesManager.getLicence();
+  });
+
 
 
 })
@@ -315,17 +320,18 @@ angular.module('starter.controllers', [])
     console.log("Back");
     $ionicHistory.goBack();
   };
-
+// add object leaveUst
   $scope.cancelOffer = function(){
-    Ride.cancelRide(function(value, response){
+    var leaveoptions = true;
+    if ($scope.destination ==="HKUST"){
+      leaveoptions = false;
+    }
+    Ride.cancelRide({"leaveUst":leaveoptions}, function(value, response){
       console.log(value);
     });
     $ionicHistory.goBack();
   }
 
-  $scope.chat = function(){
-    $state.go('tab.gohome_chat',{'id':'012'});
-  }
 
   $scope.countDownFinish = function(){
     $scope.doneCounting = true;
@@ -505,7 +511,7 @@ angular.module('starter.controllers', [])
 })
 
 
-.controller('goustCtrl', function($scope, $ionicPopup, Ride, licencesManager, $state){
+.controller('goustCtrl', function($scope, $ionicPopup, Ride, licencesManager, $state, $localstorage,RideRequestService, commonCallback){
   $scope.ready = function(destination){
     var confirmPopup = $ionicPopup.confirm({
      title: 'Confirm',
@@ -515,13 +521,14 @@ angular.module('starter.controllers', [])
    confirmPopup.then(function(res) {
      if(res) {
         console.log('You are sure');
-        if (destination == 'Hang Hau'){
-          $scope.pickUpPt = $scope.pickUpPts[0];
-        }
-        else
-          $scope.pickUpPt = $scope.pickUpPts[1];
+        // if (destination == 'Hang Hau'){
+          // $scope.pickUpPt = $scope.pickUpPts[0];
+        // }
+        // else
+          // $scope.pickUpPt = $scope.pickUpPts[1];
         
         var targetTime = new Date();
+        console.log(targetTime);
         targetTime.setMinutes(parseInt(targetTime.getMinutes())+ $scope.time);
         // console.log(targetTime.toJSON());
         console.log(targetTime);
@@ -533,7 +540,8 @@ angular.module('starter.controllers', [])
           "seat_number": $scope.numOfPassenger,
           "destination_name": destination,
           "time": targetTime.toJSON(),
-          "gender_preference": ($scope.genderPreferred === "true")
+          "gender_preference": ($scope.genderPreferred === "true"),
+          "leaveUst": false
         };
         return RideRequestService.addRide(info);
         
@@ -544,7 +552,7 @@ angular.module('starter.controllers', [])
    }).then(function(value){
     console.log(value);
     console.log(value.status.matchicon);
-    $state.go('tab.gohome_ready',{"licence":$scope.licence,"minute":$scope.time,'location': $scope.pickUpPt, 'destination': destination, 'matchicon': value.status.matchicon});
+    $state.go('tab.gohkust_ready',{"licence":$scope.licence,"minute":$scope.time,'location': destination, 'destination': "HKUST", 'matchicon': value.status.matchicon});
 
    }).catch(function(error){
     console.log(error);
@@ -585,6 +593,10 @@ angular.module('starter.controllers', [])
       $scope.licenceIndex += value;
     $scope.licence = $scope.licences[$scope.licenceIndex];
   }
+
+  $scope.$on("$ionicView.enter", function(scopes, states){
+    $scope.licences = licencesManager.getLicence();
+  });
 
 
 
@@ -713,7 +725,7 @@ angular.module('starter.controllers', [])
       flag = 3;
       tobeSent = $scope.pendingcarInfo[$scope.selected];
     }
-    console.log("Changin vehicle",  tobeSent);
+    console.log("Changin vehicle",  tobeSent, flag);
     Member.updateVehicle({ "flag": flag, "car": tobeSent },function(value, responseheader){
       console.log(value);
       if (value.status =="fail"){
@@ -721,8 +733,8 @@ angular.module('starter.controllers', [])
         return false;
       }
       else{
-
-        $scope.carInfo = $scope.pendingcarInfo;
+        if (!$scope.deleting)
+          $scope.carInfo = $scope.pendingcarInfo;
         console.log($scope.deleting);
         if ($scope.selected == -1 && $scope.deleting ==false){
           $scope.carInfo[$scope.carInfo.length-1].id = Number(value.status);

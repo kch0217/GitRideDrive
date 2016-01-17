@@ -21,6 +21,9 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
       StatusBar.styleLightContent();
     }
   });
+  $ionicPlatform.registerBackButtonAction(function (event) {
+                    event.preventDefault();
+            }, 100);;
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
@@ -78,16 +81,7 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
     }
   })
 
-  .state('tab.gohome_chat', {
-    url: '/gohome/ready/:id',
-    views: {
-      'tab-gohome': {
-        templateUrl: 'templates/driver-chatroom.html',
-        controller: 'chatCtrl',
-        params: ['id']
-      }
-    }
-  })
+
 
 
   .state('tab.gohkust', {
@@ -99,15 +93,18 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
         }
       }
     })
-    .state('tab.ready', {
-      url: '/ready',
-      views: {
-        'tab-ready': {
-          templateUrl: 'templates/driver-ready.html',
-          controller: 'ChatDetailCtrl'
-        }
+
+  .state('tab.gohkust_ready', {
+    url: '/gohkust/ready/:licence/:minute/:location/:destination/:matchicon',
+    views: {
+      'tab-gohkust': {
+        templateUrl: 'templates/driver-leave2.html',
+        controller: 'goHomeMatchCtrl',
+        params: ['licence','minute','location','destination', 'matchicon']
       }
-    })
+    }
+  })
+
 
   .state('tab.setting', {
     url: '/setting',
