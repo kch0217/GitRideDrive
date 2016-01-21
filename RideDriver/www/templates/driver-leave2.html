@@ -1,6 +1,6 @@
 <ion-view view-title="Matching in Progress" hide-back-button="true">
   <ion-content>
-<div class="list card">
+<!-- <div class="list card">
 
   <div class="item" >
   	<center style="font-size: 20px"><i class="icon ion-model-s"></i>
@@ -30,7 +30,7 @@
   <div class="item" >
   	<center style="font-size: 20px"><i class="icon ion-ios-time-outline" ng-init="countdown()"></i>
   
-   	<timer time="time"></timer>
+   	<timer time="targetTime"></timer>
    	</center>
 
   </div>
@@ -62,38 +62,60 @@
   </div>
 </div>
 
-<!-- <div class="row">
-	<div class="col">
-		<div class="list card">
-			<div class="item item-divider">
-				Passenger List
-			</div>
-			<div class="item">
-				Mary
-			</div>
+ -->
 
-		</div>
-	</div>
-	<div class="col">
-		<div class="list card">
-    <div class="item item-divider item-icon-left" ng-click="chat()">
-      <i class="icon ion-ios-chatboxes-outline"></i>
-      Chatroom
-      </div>
+<div class="row info-panel">
+  <div class="col col-50">
+    <img ng-src="{{imglocation}}" class="match-icon" width="100%">
+  </div>
+  <div class="col col-50">
+    <br>
+      <center style="font-size: 30px"><i class="icon ion-model-s"></i> {{licence}}</center>
 
-		</div>
 
-            <div class="list card">
-    <a class="item item-divider item-icon-left" href="#">
-      <i class="icon ion-map"></i>
-      Map
-      </a>
+   
+    
+  
+   <br> 
+    <center>towards</center>
+    <br>
+    
+      <center style="font-size: 30px">{{destination}}</center>
 
+    
+   
+
+    
+  </div>
+  
+</div>
+
+  <div class="list">
+    <div class="item">
+    <center>departing in</center>
     </div>
 
+    <div class="item item-divider" >
+      <center style="font-size: 40px"><i class="icon ion-ios-time-outline" ng-init="countdown()"></i>
+    
+      <timer time="targetTime"></timer>
+      </center>
 
-	</div>
-</div> -->
+    </div>
+    <div class="item">
+  <center>from</center>
+  </div>
+
+    <div class="item item-divider">
+    <center style="font-size: 30px"><i class="icon ion-flag"></i>
+    {{location}}
+    </center>
+
+  </div>
+
+  </div>
+
+
 
 
   </ion-content>

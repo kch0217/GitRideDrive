@@ -1,17 +1,76 @@
-<ion-view title="Login">
-    <ion-content padding="true" class="has-header has-footer">
-        <center><h3>RideSharing - Driver</h3></center>
-        <form name="myForm">
-            <label class="item item-input">
-                <span class="input-label">Email</span>
-                <input type="email" placeholder="" name="email" ng-model="info.email" required>
+<ion-view hide-nav-bar="true">
+    <ion-content padding="true" class="has-footer login" overflow-scroll="true">
+        <div class="form-box animated bounceInDown"> 
+            <div class="form-top">
+                <div class="form-top-left">
+                    <h3>Login to our application</h3>
+                    <p>Enter e-mail and password to log on:</p>
+                </div>
 
-            </label>
-            <label class="item item-input">
-                <span class="input-label">Password</span>
-                <input type="password" placeholder="" name="password" ng-model="info.password" required>
-            </label>
-        </form>
+            </div>
+            <form name="myForm" class="form-bottom">
+<!--                 <label class="item item-input">
+                    <span class="input-label">Email</span>
+                    <input type="email" placeholder="Your Email" name="email" ng-model="info.email" required>
+
+                </label> -->
+                <div class="item item-input">
+                    <input type="email" placeholder="Your Email" name="email" ng-model="info.email" required class="login">
+                </div>
+<!--                 <label class="item item-input">
+                    <span class="input-label">Password</span>
+                    <input type="password" placeholder="" name="password" ng-model="info.password" required class="form-control">
+                </label> -->
+                <div class="item item-input">
+                    <input type="password" placeholder="Your Password" name="password" ng-model="info.password" required class="login">
+
+                </div>
+                <span style="color:red" ng-show="myForm.email.$dirty && myForm.email.$invalid">
+                    <span ng-show="myForm.email.$error.required">Email is required.</span>
+                    <span ng-show="myForm.email.$error.email">Invalid email address.</span>
+                </span>
+                <span style="color:red" ng-show="myForm.password.$dirty">
+                    <span ng-show="myForm.password.$error.required">Password is required.</span>
+                </span>
+                            <button class="button submitB button-block" ng-click="signin(info)" style="border-radius: 18px;" ng-disabled="myForm.email.$error.required || myForm.email.$error.email || myForm.password.$error.required">Login</button>
+            <div class="button-bar">
+                <button class="button button-balanced button-block button-small additionalB" ui-sref="register" style="border-radius: 18px;">Register</button>
+                <button class="button button-assertive button-block button-small additionalB" ui-sref="forgetPW" style="border-radius: 18px;">Forget Password</button>
+            </div>
+            </form>
+
+
+
+
+
+        </div>
+
+
+
+ <!-- Second version (using bootstrap) -->
+<!-- <div class="top-content">
+<div class="form-box">
+    <div class="form-top">
+        <div class="form-top-left">
+            <h3>Login to our application</h3>
+            <p>Enter username and password to log on:</p>
+        </div>
+
+    </div>
+
+    <form name="myForm" class="form-bottom form-horizontal">
+        <div class="form-group">
+            
+                <input type="email" name="email" ng-model="info.email" placeholder="Email" required class="form-control form-email input-lg">
+            
+            
+        </div>
+        <div class="form-group">
+            
+                <input type="password" placeholder="Password" name="password" ng-model="info.password" required class="form-control form-email input-lg">
+            
+            
+        </div>
         <span style="color:red" ng-show="myForm.email.$dirty && myForm.email.$invalid">
             <span ng-show="myForm.email.$error.required">Email is required.</span>
             <span ng-show="myForm.email.$error.email">Invalid email address.</span>
@@ -19,20 +78,27 @@
        <span style="color:red" ng-show="myForm.password.$dirty">
             <span ng-show="myForm.password.$error.required">Password is required.</span>
         </span>
+        <button class="btn btn-lg btn-block" type="submit" ng-click="signin(info)" ng-disabled="myForm.email.$error.required || myForm.email.$error.email || myForm.password.$error.required">Login</button>
 
 
-        <button class="button button-balanced button-block" ng-click="signin(info)" style="border-radius: 18px;" ng-disabled="myForm.email.$error.required || myForm.email.$error.email || myForm.password.$error.required">Login</button>
-        <div class="button-bar">
+
+    </form>
+            <div class="button-bar">
             <button class="button button-positive button-outline button-block button-small icon" ng-click="register()">Register</button>
             <button class="button button-assertive button-outline button-block button-small" ui-sref="forgetPW">Forget Password</button>
         </div>
+
+
+</div>
+</div>
+ -->
 
 
     </ion-content>
 
 <ion-footer-bar align-title="left" class="bar-light">
 
-  <h1 class="title">Only for HKUST members</h1>
+  <h1 class="title animated tada infinite">Only for HKUST members</h1>
 
 </ion-footer-bar>
 </ion-view>

@@ -1,8 +1,12 @@
 <ion-view title="Registration">
-    <ion-content padding="true" class="has-header" scroll="true">
+  <ion-nav-bar class="bar-calm">
+    <ion-nav-back-button></ion-nav-back-button>
+  </ion-nav-bar>
+    <ion-content padding="true" class="has-header">
     <form name="myForm">
-        <div class="list">
-          <label class="item item-divider">
+        <div class="list registerbox">
+          <label class="item item-divider register">
+              <i class="icon ion-ios-information-outline"></i>
               <span>Basic Information</span>
 
           </label>
@@ -57,10 +61,12 @@
         </div>
 
       </form>
+      <br>
       <form name="myForm2">
-        <div class="list">
-            <label class="item item-divider">
-                <span>User Authentication</span>
+        <div class="list registerbox">
+            <label class="item item-divider register">
+              <i class="ion-person-stalker"></i>
+              <span>User Authentication</span>
             </label>
 
             <label class="item item-toggle">
@@ -82,9 +88,10 @@
             </label>
         </div>
       </form>
-
-        <div class="list">
-            <label class="item item-divider">
+<br>
+        <div class="list registerbox">
+            <label class="item item-divider register">
+                <i class="ion-android-car"></i>
                 <span>Ridesharing Preference</span>
             </label>
             <label class="item item-toggle">
@@ -127,17 +134,12 @@
               <a class="button" ng-click="removeCar();">Remove</a>
             </div>
 
-<!--             <label class="item item-divider item-icon-left item-icon-right" ng-if="haveCar">
-                <button class="icon ion-android-add" ng-click="addCar();"></button>
-
-                <button class="icon ion-ios-minus-empty" ng-click="alert('hi');"></button>
-            </label> -->
 
         </div>
         
         <div class="button-bar">
-          <button class="button button-balanced" ng-click="confirm()" ng-disabled="myForm.$error.required || myForm.$error.compareTo || myForm2.$error.email || myForm2.$error.required">Confirm</button>
-          <button class="button button-dark" ng-click="reset()">Reset</button>
+          <button class="button button-balanced" style="border-radius: 18px;" ng-click="confirm()" ng-disabled="myForm.$error.required || myForm.$error.compareTo || myForm2.$error.email || myForm2.$error.required">Confirm</button>
+          <button class="button button-dark" ng-click="reset()" style="border-radius: 18px;">Reset</button>
         </div>
     </ion-content>
 

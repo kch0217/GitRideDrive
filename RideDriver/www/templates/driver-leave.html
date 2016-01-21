@@ -1,35 +1,38 @@
 <ion-view view-title="Go Home">
-    <ion-content padding="true" class="has-header">
-        <div class="row">
-            <button class="col button button-icon button-stable button-clear icon ion-ios-minus-outline" ng-click="modifyTime(-1)"></button>
-            <button class="col button button-stable button-icon icon ion-ios-time-outline"><span> {{time}} min</span></button>
-            <button class="col button button-icon button-stable button-clear icon ion-ios-plus-outline" ng-click="modifyTime(+1)"></button>
+    <ion-content padding="true" class="has-header gohome">
+    <div class="control-panel">
+
+        <div class="row animated fadeInDown">
+            <button class="col button button-icon button-calm button-clear icon ion-ios-minus-outline" ng-click="modifyTime(-1)"></button>
+            <button class="col button button-royal button-outline button-icon icon ion-ios-time-outline no-border"><span> {{time}} min</span></button>
+            <button class="col button button-icon button-calm button-clear icon ion-ios-plus-outline" ng-click="modifyTime(+1)"></button>
         </div>
-        <div class="row">
-            <button class="col button button-icon button-stable button-clear icon ion-ios-minus-outline" ng-click="modifyPassenger(-1)"></button>
-            <button class="col button button-stable button-icon icon ion-ios-people"><span> {{numOfPassenger}}</span></button>
-            <button class="col button button-icon button-stable button-clear icon ion-ios-plus-outline" ng-click="modifyPassenger(+1)"></button>
+        <div class="row animated slideInLeft">
+            <button class="col button button-icon button-calm button-clear icon ion-ios-minus-outline" ng-click="modifyPassenger(-1)"></button>
+            <button class="col button button-royal button-outline button-icon icon ion-ios-people no-border"><span> {{numOfPassenger}}</span></button>
+            <button class="col button button-icon button-calm button-clear icon ion-ios-plus-outline" ng-click="modifyPassenger(+1)"></button>
         </div>
-        <div class="row">
-            <button class="col button button-icon button-stable button-clear ion-chevron-left" ng-click="changeLicence(-1)"></button>
-            <button class="col button button-stable button-icon ion-model-s"> <span>{{licence}}</span></button>
-            <button class="col button button-icon button-stable button-clear ion-chevron-right" ng-click="changeLicence(+1)"></button>
-        </div>
+        <div class="row animated slideInRight">
+            <button class="col button button-icon button-calm button-clear ion-chevron-left" ng-click="changeLicence(-1)"></button>
+            <button class="col button button-royal button-outline button-icon ion-model-s no-border"> <span>{{licence}}</span></button>
+            <button class="col button button-icon button-calm button-clear ion-chevron-right" ng-click="changeLicence(+1)"></button>
+        </div> 
+      </div> 
 <div class="list card">
-  <div class="item item-divider">
+  <div class="item destination item-divider">
     Where are you heading?
   </div>  
 
-  <a class="item item-icon-left" ng-click="ready('Choi Hung')">
+  <a class="item item-icon-left home" ng-click="ready('Choi Hung')">
     <i class="icon ion-android-train"></i>
     Choi Hung
-    <span class="badge badge-assertive">0</span>
+    <span class="badge badge-assertive">{{statistics.chCount}}</span>
   </a>
 
-  <a class="item item-icon-left" ng-click="ready('Hang Hau')">
+  <a class="item item-icon-left home" ng-click="ready('Hang Hau')">
     <i class="icon ion-android-train"></i>
     Hang Hau
-    <span class="badge badge-assertive">0</span>
+    <span class="badge badge-assertive">{{statistics.hhCount}}</span>
   </a>
 <!-- 
   <a class="item item-icon-left" ng-click="ready('Sai Kung')">

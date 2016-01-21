@@ -1,7 +1,7 @@
 <ion-view view-title="Manage your car">
-<!-- <ion-nav-bar class="bar-balanced">
-<ion-nav-back-button class="button-clear">
-    <i class="ion-arrow-left-c"></i> Back
+<ion-nav-bar class="bar-calm">
+<ion-nav-back-button>
+
   </ion-nav-back-button>
     <ion-nav-buttons side="secondary">
     <div class="buttons">
@@ -9,12 +9,12 @@
         Delete
       </button></div>
     </ion-nav-buttons>
-  </ion-nav-bar> -->
+  </ion-nav-bar>
 
   <ion-content padding="true" class="has-header">
 
     <ion-list show-delete="setting.showDelete" type="card">
-      <ion-item ng-repeat="car in carInfo">
+      <ion-item ng-repeat="car in carInfo" class="car-list">
       {{car.license_number}}
       <span class="item-note">
       Swipe left to edit this car
@@ -27,6 +27,10 @@
                        ng-click="copyToPending(); carInfo.splice($index, 1); deleteStatus($index); updatelist();">
                        Delete
     </ion-option-button>
+        <ion-delete-button class="ion-minus-circled"
+                       ng-click="copyToPending(); carInfo.splice($index, 1); deleteStatus($index); updatelist();">
+                       
+    </ion-delete-button>
       </ion-item>
       <ion-item ng-click="edit(-1)">
       Create a new car

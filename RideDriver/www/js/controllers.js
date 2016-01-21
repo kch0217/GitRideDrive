@@ -33,9 +33,9 @@ angular.module('starter.controllers', [])
     
   }
 
-  $scope.register = function(){
-    $state.go('register');
-  }
+  // $scope.register = function(){
+  //   $state.go('register');
+  // }
 
   $scope.$on("$ionicView.enter", function(scopes, states){
     $ionicHistory.clearHistory();
@@ -182,6 +182,8 @@ angular.module('starter.controllers', [])
      template: 'Are you sure you are heading to '+ destination+'?'
    });
 
+    var targetTime = null;
+
    confirmPopup.then(function(res) {
      if(res) {
         console.log('You are sure');
@@ -191,7 +193,7 @@ angular.module('starter.controllers', [])
         else
           $scope.pickUpPt = $scope.pickUpPts[1];
         
-        var targetTime = new Date();
+        targetTime = new Date();
         targetTime.setMinutes(parseInt(targetTime.getMinutes())+ $scope.time);
         // console.log(targetTime.toJSON());
         console.log(targetTime);
@@ -231,8 +233,11 @@ angular.module('starter.controllers', [])
 
   $scope.time = 7;
   $scope.modifyTime = function(value){
-    if ($scope.time + value > 1)
+    if ($scope.time + value > 1){
+      // console.log($scope.time + value);
       $scope.time = $scope.time + value;
+    }
+      
   }
 
   $scope.numOfPassenger = 2;
@@ -292,6 +297,9 @@ angular.module('starter.controllers', [])
 
   $scope.$on("$ionicView.enter", function(scopes, states){
     $scope.licences = licencesManager.getLicence();
+    RideRequestService.getQueueSeatNumber(true).then(function(value){
+      $scope.statistics = value.num;
+    });
   });
 
 
@@ -307,17 +315,18 @@ angular.module('starter.controllers', [])
   $scope.doneCounting = false;
 
 
-  var targetTime = new Date();
+  $scope.targetTime = new Date();
   console.log($scope.time);
-  console.log(targetTime.getMinutes());
-  console.log(targetTime);
-  targetTime.setMinutes(parseInt(targetTime.getMinutes())+ parseInt($scope.time));
-  console.log(targetTime);
+  console.log($scope.targetTime.getMinutes());
+  console.log($scope.targetTime);
+  $scope.targetTime.setMinutes(parseInt($scope.targetTime.getMinutes())+ parseInt($scope.time));
+  console.log($scope.targetTime);
 
 
   $scope.goBack = function() {
     //contact the server to call off the ride
     console.log("Back");
+    $timeout.cancel($scope.counter);
     $ionicHistory.goBack();
   };
 // add object leaveUst
@@ -329,12 +338,21 @@ angular.module('starter.controllers', [])
     Ride.cancelRide({"leaveUst":leaveoptions}, function(value, response){
       console.log(value);
     });
+    $timeout.cancel($scope.counter);
     $ionicHistory.goBack();
   }
 
 
   $scope.countDownFinish = function(){
-    $scope.doneCounting = true;
+    
+    var currentTime = new Date();
+    if ($scope.targetTime > currentTime){
+
+      $scope.counter = $timeout($scope.countDownFinish, 1000)
+    }
+    else{
+      $scope.doneCounting = true;
+    }
   }
 
   $scope.$on("$ionicView.enter", function(scopes, states){
@@ -343,7 +361,7 @@ angular.module('starter.controllers', [])
     else
       $scope.imglocation = "img/icon_0" + $scope.matchicon + ".png";
 
-    $scope.counter = $timeout($scope.countDownFinish, 1000*60*$scope.time);
+    $scope.counter = $timeout($scope.countDownFinish, 1000);
     
   });
 
@@ -352,23 +370,27 @@ angular.module('starter.controllers', [])
 })
 
 .controller('timeCtrl', function($scope, $timeout){
-  var timeInSec = this.time*60;
+  // var timeInSec = this.time*60;
+  var targetTime = new Date(this.time);
+  console.log(targetTime);
   $scope.displayTime = null;
 
 
   
 
   $scope.startTime = function(){
-    if (timeInSec > 0){
-      timeInSec--;
-      var min = Math.floor(timeInSec/60);
-      var sec = Math.floor(timeInSec %60);
-
-      if (sec <10)
-        sec = '0' + sec;
-      $scope.displayTime = min + ' : ' + sec;
-
-      $timeout($scope.startTime, 1000);
+    var currentTime = new Date();
+    if (targetTime > currentTime){
+      var difference = targetTime.getTime() - currentTime.getTime();
+      difference = difference/1000;
+      var second = Math.floor(difference % 60);
+      difference = difference/60;
+      var minute = Math.floor(difference % 60);
+      if (second < 10){
+        second = '0' + second;
+      }
+      $scope.displayTime = minute + ' : ' + second;
+      $timeout($scope.startTime, 1000)
     }
     
   }
@@ -569,7 +591,7 @@ angular.module('starter.controllers', [])
 
   $scope.time = 7;
   $scope.modifyTime = function(value){
-    if ($scope.time + value > 0)
+    if ($scope.time + value > 1)
       $scope.time = $scope.time + value;
   }
 
@@ -596,6 +618,9 @@ angular.module('starter.controllers', [])
 
   $scope.$on("$ionicView.enter", function(scopes, states){
     $scope.licences = licencesManager.getLicence();
+    RideRequestService.getQueueSeatNumber(false).then(function(value){
+      $scope.statistics = value.num;
+    });
   });
 
 
@@ -761,4 +786,24 @@ angular.module('starter.controllers', [])
     $scope.modal.remove();
   });
 
+})
+
+
+.controller("tabController", function($scope){
+  $scope.disableSelected = [true, false, false];
+  $scope.select = function(dest){
+    // console.log(dest, $scope.disableSelected[dest]);
+    if (dest === 0 && !$scope.disableSelected[dest]){
+      // console.log("0 is selected");
+      $scope.disableSelected = [true, false, false];
+    }
+    else if (dest === 1 && !$scope.disableSelected[dest]){
+      // console.log("1 is selected");
+      $scope.disableSelected = [false, true, false];
+    }
+    else if (dest === 2 && !$scope.disableSelected[dest]){
+      // console.log("2 is selected");
+      $scope.disableSelected = [false, false, true];
+    }
+  }
 });

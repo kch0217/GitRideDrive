@@ -3,12 +3,12 @@ angular.module('starter.services', [])
 .factory('loadingService', function() {
   return {
     start: function($ionicLoading){
-    //   $ionicLoading.show({
-    //   template: 'Loading...'
-    // });
+      $ionicLoading.show({
+      template: 'Loading...'
+    });
     },
     end: function($ionicLoading){
-      // $ionicLoading.hide();
+      $ionicLoading.hide();
     }
   }
 })
@@ -89,11 +89,11 @@ angular.module('starter.services', [])
     this.getLicenceFromServer = function(callback){
       Own.getVehicle(function(value, responseheaders){
       car = value.vehicle;
-      console.log(value);
+      // console.log(value);
       if (callback != null)
         callback();
     }, function(error){
-      console.log(error);
+      // console.log(error);
 
     });
     }
@@ -103,7 +103,7 @@ angular.module('starter.services', [])
       for (var i = 0; i< car.length; i++){
         licence.push(car[i].license_number);
       }
-      console.log(car);
+      // console.log(car);
       return licence;
     }
 
@@ -213,6 +213,12 @@ angular.module('starter.services', [])
     addRide: function(info){
       var promise = Ride.addRide(info).$promise;
 
+      return commonCallback.defaultHandling(promise);
+    },
+
+    getQueueSeatNumber: function(leaveOption){
+      // console.log(leaveOption);
+      var promise = Request.getQueueSeatNumber({"leaveUst": leaveOption}).$promise;
       return commonCallback.defaultHandling(promise);
     }
   }

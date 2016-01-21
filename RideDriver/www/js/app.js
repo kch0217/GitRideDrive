@@ -23,7 +23,8 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
   });
   $ionicPlatform.registerBackButtonAction(function (event) {
                     event.preventDefault();
-            }, 100);;
+            }, 100);
+
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
@@ -55,7 +56,8 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
     .state('tab', {
     url: '/tab',
     abstract: true,
-    templateUrl: 'templates/tabs.html'
+    templateUrl: 'templates/tabs.html',
+    controller: 'tabController'
   })
 
   // Each tab has its own nav history stack:
@@ -107,7 +109,7 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
 
 
   .state('tab.setting', {
-    url: '/setting',
+    url: '/setting', 
     views: {
       'tab-setting': {
         templateUrl: 'templates/driver-setting.html',
@@ -145,34 +147,6 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
 .config(function(LoopBackResourceProvider){
   // Change the URL where to access the LoopBack REST API server
     LoopBackResourceProvider.setUrlBase('http://ridesharingfyp.ddns.net:3000/api');
-    // LoopBackResourceProvider.setUrlBase('http://147.8.202.247:3000/api');
-
-})
-
-
-
-.config(function($httpProvider) {
-  $httpProvider.interceptors.push(function($rootScope) {
-    return {
-      request: function(config) {
-        $rootScope.$broadcast('loading:show')
-        return config
-      },
-      response: function(response) {
-        $rootScope.$broadcast('loading:hide')
-        return response
-      }
-    }
-  })
-})
-
-
-.run(function($rootScope, $ionicLoading) {
-  $rootScope.$on('loading:show', function() {
-    $ionicLoading.show({template: 'Loading...'})
-  })
-
-  $rootScope.$on('loading:hide', function() {
-    $ionicLoading.hide()
-  })
+    // LoopBackResourceProvider.setUrlBase('http://192.168.0.110:3000/api');
+ 
 });
