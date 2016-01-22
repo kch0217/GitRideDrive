@@ -1,20 +1,15 @@
 <ion-modal-view>
-<!--   <ion-header-bar>
-    <button class="button-clear" ng-click="closeModal()">Close</button>
-    <h1 class="title">Edit Your Car</h1>
-    <button class="button-clear" style="float:right" ng-click="confirm(); closeModal();">Save</button>
-  </ion-header-bar> -->
   <ion-nav-bar class="bar-balanced">
       <ion-nav-title>
       {{action}} Your Car
     </ion-nav-title>
-    <ion-nav-buttons side="primary">
+    <ion-nav-buttons side="left">
     <div class="buttons">
       <button class="button" ng-click="closeModal()">
         Close
       </button></div>
     </ion-nav-buttons>
-    <ion-nav-buttons side="secondary">
+    <ion-nav-buttons side="right">
     <div class="buttons">
       <button class="button" ng-click="confirm()">
         Save

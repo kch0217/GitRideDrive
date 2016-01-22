@@ -5,12 +5,12 @@
 }
 
 .scroll-content.gohome {
-	background:url("../img/background2.jpg") no-repeat;
+	background:url("../img/background4.jpg") no-repeat;
 	-webkit-background-size: 150% auto;
 }
 
 .scroll-content.goust {
-	background:url("../img/background2.jpg") no-repeat;
+	background:url("../img/background3.jpg") no-repeat;
 	-webkit-background-size: 150% auto;
 }
 
@@ -31,7 +31,7 @@ textarea.form-control {
 }
 
 
-.item.item-input {
+.item.item-input.login {
     background-color: transparent;
     border-radius: 25px;
 }
@@ -133,10 +133,16 @@ button.additionalB:active:focus, button.additionalB.active:focus, button.submitB
 
 
 .control-panel {
-		background: rgba(255, 255, 255, 0.5);
+		background: rgba(255, 255, 255, 0.8);
 	/*background: rgba(50, 250, 250, 0.15);*/
-	-moz-border-radius: 4px 4px 0 0; -webkit-border-radius: 4px 4px 0 0; border-radius: 4px 4px 0 0;
+	-moz-border-radius: 15px 15px 15px 15px; -webkit-border-radius: 15px 15px 15px 15px; border-radius: 15px 15px 15px 15px;
 
+}
+
+.item.item-icon-left {
+	font-family: "Trebuchet MS", Helvetica, sans-serif;
+	background-color: rgba(255,255,255, 0.8);
+    border: none;
 }
 
 .no-border{
@@ -157,10 +163,12 @@ button.additionalB:active:focus, button.additionalB.active:focus, button.submitB
 }
 
 .destination.item-divider{
-	background-color: rgba(88,88,88,0.5);
+	background-color: rgba(88,88,88,0.8);
 	color: #fff;
 	font-style: oblique;
 	text-align: center;
+	border: none;
+
 }
 
 
