@@ -73,12 +73,12 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
   })
 
   .state('tab.gohome_ready', {
-    url: '/gohome/ready/:licence/:minute/:location/:destination/:matchicon',
+    url: '/gohome/ready/:licence/:endTime/:location/:destination/:matchicon',
     views: {
       'tab-gohome': {
         templateUrl: 'templates/driver-leave2.html',
         controller: 'goHomeMatchCtrl',
-        params: ['licence','minute','location','destination', 'matchicon']
+        params: ['licence','endTime','location','destination', 'matchicon']
       }
     }
   })
@@ -97,12 +97,12 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
     })
 
   .state('tab.gohkust_ready', {
-    url: '/gohkust/ready/:licence/:minute/:location/:destination/:matchicon',
+    url: '/gohkust/ready/:licence/:endTime/:location/:destination/:matchicon',
     views: {
       'tab-gohkust': {
         templateUrl: 'templates/driver-leave2.html',
         controller: 'goHomeMatchCtrl',
-        params: ['licence','minute','location','destination', 'matchicon']
+        params: ['licence','endTime','location','destination', 'matchicon']
       }
     }
   })
@@ -146,7 +146,7 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
 
 .config(function(LoopBackResourceProvider){
   // Change the URL where to access the LoopBack REST API server
-    LoopBackResourceProvider.setUrlBase('http://ridesharingfyp.ddns.net:3000/api');
-    // LoopBackResourceProvider.setUrlBase('http://192.168.0.110:3000/api');
+    // LoopBackResourceProvider.setUrlBase('http://ridesharingfyp.ddns.net:3000/api');
+    LoopBackResourceProvider.setUrlBase('http://192.168.0.110:3000/api');
  
 });

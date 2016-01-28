@@ -17,7 +17,19 @@ angular.module('starter.controllers', [])
 
     }).then(function(value){
       $localstorage.set('genderPreference', value.status);
-      $state.go('tab.gohome');
+      var previousInfo = $localstorage.getObject("matchInfo");
+      var currentTime = new Date();
+      var targetTime = new Date(previousInfo.endTime);
+      var userinfo = $localstorage.getObject('userInfo');
+      console.log(previousInfo);
+      if (JSON.stringify(previousInfo) === "{}" || currentTime >= targetTime || userinfo.email !== previousInfo.owner)
+        $state.go('tab.gohome');
+      else if (previousInfo.destination === "HKUST"){
+        $state.go('tab.gohkust_ready',{"licence":previousInfo.licence,"endTime":previousInfo.endTime,'location': previousInfo.location, 'destination': "HKUST", 'matchicon': previousInfo.matchicon});
+      }
+      else{
+        $state.go('tab.gohome_ready',{"licence":previousInfo.licence,"endTime":previousInfo.endTime,'location': previousInfo.location, 'destination': previousInfo.destination, 'matchicon': previousInfo.matchicon});
+      }
     }).catch(function(error){
       var alertPopup = $ionicPopup.alert({
         title: 'Error',
@@ -186,7 +198,7 @@ angular.module('starter.controllers', [])
 
    confirmPopup.then(function(res) {
      if(res) {
-        console.log('You are sure');
+        // console.log('You are sure');
         if (destination == 'Hang Hau'){
           $scope.pickUpPt = $scope.pickUpPts[0];
         }
@@ -217,7 +229,11 @@ angular.module('starter.controllers', [])
    }).then(function(value){
     console.log(value);
     console.log(value.status.matchicon);
-    $state.go('tab.gohome_ready',{"licence":$scope.licence,"minute":$scope.time,'location': $scope.pickUpPt, 'destination': destination, 'matchicon': value.status.matchicon});
+    var userinfo = $localstorage.getObject('userInfo');
+    $scope.targetTime = new Date();
+    $scope.targetTime.setMinutes(parseInt($scope.targetTime.getMinutes())+ parseInt($scope.time));
+    $localstorage.setObject('matchInfo', {"owner": userinfo.email, "licence":$scope.licence,"endTime":$scope.targetTime,'location': $scope.pickUpPt, 'destination': destination, 'matchicon': value.status.matchicon});
+    $state.go('tab.gohome_ready',{"licence":$scope.licence,"endTime":$scope.targetTime,'location': $scope.pickUpPt, 'destination': destination, 'matchicon': value.status.matchicon});
 
    }).catch(function(error){
     console.log(error);
@@ -306,28 +322,35 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('goHomeMatchCtrl', function($scope, $stateParams, $ionicHistory, $state, $timeout, Ride){
+.controller('goHomeMatchCtrl', function($scope, $stateParams, $ionicHistory, $state, $timeout, Ride, $localstorage){
   $scope.licence = $stateParams.licence;
-  $scope.time = $stateParams.minute;
+  $scope.targetTime = new Date($stateParams.endTime);
   $scope.location = $stateParams.location;
   $scope.destination = $stateParams.destination;
   $scope.matchicon = parseInt($stateParams.matchicon);
   $scope.doneCounting = false;
 
 
-  $scope.targetTime = new Date();
-  console.log($scope.time);
-  console.log($scope.targetTime.getMinutes());
-  console.log($scope.targetTime);
-  $scope.targetTime.setMinutes(parseInt($scope.targetTime.getMinutes())+ parseInt($scope.time));
-  console.log($scope.targetTime);
+  // $scope.targetTime = new Date();
+  // console.log($scope.time);
+  // console.log($scope.targetTime.getMinutes());
+  // console.log($scope.targetTime);
+  // $scope.targetTime.setMinutes(parseInt($scope.targetTime.getMinutes())+ parseInt($scope.time));
+  // console.log($scope.targetTime);
 
 
   $scope.goBack = function() {
     //contact the server to call off the ride
     console.log("Back");
     $timeout.cancel($scope.counter);
-    $ionicHistory.goBack();
+    $localstorage.setObject("matchInfo", {});
+    if ($scope.destination ==="HKUST"){
+      $state.go("tab.gohkust");
+    }
+    else{
+      $state.go("tab.gohome");
+    }
+    //$ionicHistory.goBack();
   };
 // add object leaveUst
   $scope.cancelOffer = function(){
@@ -339,13 +362,21 @@ angular.module('starter.controllers', [])
       console.log(value);
     });
     $timeout.cancel($scope.counter);
-    $ionicHistory.goBack();
+    $localstorage.setObject("matchInfo", {});
+    if ($scope.destination ==="HKUST"){
+      $state.go("tab.gohkust");
+    }
+    else{
+      $state.go("tab.gohome");
+    }
+    // $ionicHistory.goBack();
   }
 
 
   $scope.countDownFinish = function(){
     
     var currentTime = new Date();
+    console.log("Counting...");
     if ($scope.targetTime > currentTime){
 
       $scope.counter = $timeout($scope.countDownFinish, 1000)
@@ -374,11 +405,13 @@ angular.module('starter.controllers', [])
   var targetTime = new Date(this.time);
   console.log(targetTime);
   $scope.displayTime = null;
+  var timer;
 
 
   
 
   $scope.startTime = function(){
+    console.log("Directive counting...");
     var currentTime = new Date();
     if (targetTime > currentTime){
       var difference = targetTime.getTime() - currentTime.getTime();
@@ -390,11 +423,14 @@ angular.module('starter.controllers', [])
         second = '0' + second;
       }
       $scope.displayTime = minute + ' : ' + second;
-      $timeout($scope.startTime, 1000)
+      timer = $timeout($scope.startTime, 1000)
     }
     
   }
 
+  $scope.$on('$destroy', function(){
+    $timeout.cancel(timer);
+  })
 
 
 })
@@ -574,7 +610,11 @@ angular.module('starter.controllers', [])
    }).then(function(value){
     console.log(value);
     console.log(value.status.matchicon);
-    $state.go('tab.gohkust_ready',{"licence":$scope.licence,"minute":$scope.time,'location': destination, 'destination': "HKUST", 'matchicon': value.status.matchicon});
+    $scope.targetTime = new Date();
+    $scope.targetTime.setMinutes(parseInt($scope.targetTime.getMinutes())+ parseInt($scope.time));
+    var userinfo = $localstorage.getObject('userInfo');
+    $localstorage.setObject('matchInfo', {"owner": userinfo.email, "licence":$scope.licence,"endTime":$scope.targetTime,'location': destination, 'destination': "HKUST", 'matchicon': value.status.matchicon});
+    $state.go('tab.gohkust_ready',{"licence":$scope.licence,"endTime":$scope.targetTime,'location': destination, 'destination': "HKUST", 'matchicon': value.status.matchicon});
 
    }).catch(function(error){
     console.log(error);

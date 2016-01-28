@@ -1,5 +1,5 @@
 <ion-view view-title="Matching in Progress" hide-back-button="true">
-  <ion-content>
+  <ion-content ng-class="{'goust': destination === 'HKUST', 'gohome': destination!=='HKUST'}" padding="true">
 <!-- <div class="list card">
 
   <div class="item" >
@@ -70,17 +70,17 @@
   </div>
   <div class="col col-50">
     <br>
-      <center style="font-size: 30px"><i class="icon ion-model-s"></i> {{licence}}</center>
+      <center style="font-size: 30px; color: #ef4e3a"><i class="icon ion-model-s"></i> {{licence}}</center>
 
 
    
     
   
    <br> 
-    <center>towards</center>
+    <center style="font-size: 20px; color: #444">towards</center>
     <br>
     
-      <center style="font-size: 30px">{{destination}}</center>
+      <center style="font-size: 30px; color: #ef4e3a;">{{destination}}</center>
 
     
    
@@ -91,23 +91,23 @@
 </div>
 
   <div class="list">
-    <div class="item">
+    <div class="item match">
     <center>departing in</center>
     </div>
 
-    <div class="item item-divider" >
-      <center style="font-size: 40px"><i class="icon ion-ios-time-outline" ng-init="countdown()"></i>
+    <div class="item item-divider important-label" >
+      <center><i class="icon ion-ios-time-outline" ng-init="countdown()"></i>
     
-      <timer time="targetTime"></timer>
+      <timer time="targetTime" class="animated pulse infinite"></timer>
       </center>
 
     </div>
-    <div class="item">
+    <div class="item match">
   <center>from</center>
   </div>
 
-    <div class="item item-divider">
-    <center style="font-size: 30px"><i class="icon ion-flag"></i>
+    <div class="item item-divider important-label">
+    <center><i class="icon ion-flag"></i>
     {{location}}
     </center>
 

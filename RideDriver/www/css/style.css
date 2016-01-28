@@ -174,7 +174,7 @@ button.additionalB:active:focus, button.additionalB.active:focus, button.submitB
 
 .popup-head {
 
-    background-color: rgba(67,206,230, 0.2);
+    background-color: rgba(74,135,238, 0.8);
 
 
 }
@@ -186,7 +186,7 @@ button.additionalB:active:focus, button.additionalB.active:focus, button.submitB
 }
 
 .info-panel {
-	background: rgba(0, 0, 0, 0.3);
+	background: rgba(255, 255, 255, 0.3);
 }
 
 .match-icon{
@@ -194,3 +194,14 @@ button.additionalB:active:focus, button.additionalB.active:focus, button.submitB
 	padding: 10px;
 
 }
+
+.match.item{
+	background-color: rgba(255,255,255,0.3);
+}
+
+.important-label{
+	font-family: Impact, Charcoal, sans-serif;	
+	font-size: 30px;
+
+}
+
