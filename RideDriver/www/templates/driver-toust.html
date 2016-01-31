@@ -1,5 +1,7 @@
 <ion-view view-title="Go to HKUST">
     <ion-content padding="true" class="has-header goust">
+    <ion-refresher pulling-text="Pull to refresh" on-refresh="doRefresh()">
+    </ion-refresher>
     <div class="control-panel">
         <div class="row animated fadeInDown">
             <button class="col button button-icon button-calm button-clear icon ion-ios-minus-outline" ng-click="modifyTime(-1)"></button>
@@ -25,14 +27,16 @@
 
   <div class="item item-icon-left" ng-click="ready('Choi Hung')">
     <i class="icon ion-android-train"></i>
-    Choi Hung
-    <span class="badge badge-assertive">{{statistics.chCount}}</span>
+<!--     Choi Hung
+    <span class="badge badge-assertive">{{statistics.chCount}}</span> -->
+    <location-display info="false" location="Choi Hung">Choi Hung</location-display>
   </div>
 
   <div class="item item-icon-left" ng-click="ready('Hang Hau')">
     <i class="icon ion-android-train"></i>
-    Hang Hau
-    <span class="badge badge-assertive">{{statistics.chCount}}</span>
+<!--     Hang Hau
+    <span class="badge badge-assertive">{{statistics.hhCount}}</span> -->
+    <location-display info="false" location="Hang Hau">Hang Hau</location-display>
   </div>
 
 

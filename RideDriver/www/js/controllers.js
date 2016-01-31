@@ -22,7 +22,7 @@ angular.module('starter.controllers', [])
       var targetTime = new Date(previousInfo.endTime);
       var userinfo = $localstorage.getObject('userInfo');
       console.log(previousInfo);
-      if (JSON.stringify(previousInfo) === "{}" || currentTime >= targetTime || userinfo.email !== previousInfo.owner)
+      if (previousInfo == null || JSON.stringify(previousInfo) === "{}" || currentTime >= targetTime || userinfo.email !== previousInfo.owner)
         $state.go('tab.gohome');
       else if (previousInfo.destination === "HKUST"){
         $state.go('tab.gohkust_ready',{"licence":previousInfo.licence,"endTime":previousInfo.endTime,'location': previousInfo.location, 'destination': "HKUST", 'matchicon': previousInfo.matchicon});
@@ -187,8 +187,20 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('goHomeCtrl',function($scope, $state, $ionicHistory, $ionicPopup, Member, pushRegister, licencesManager, $localstorage, commonCallback, RideRequestService){
+.controller('goHomeCtrl',function($scope, $state, $ionicHistory, $ionicPopup, Member, pushRegister, licencesManager, $localstorage, commonCallback, RideRequestService, safeChecking, QueueSeatProvider){
   $scope.ready = function(destination){
+    if (!safeChecking.safeToStart()){
+      var warningPopup = $ionicPopup.alert({
+         title: 'Error',
+         template: 'You can only initiate one offer.'
+       });
+      warningPopup.then(function(res){
+
+      }, function(error){
+
+      });
+      return;
+    }
     var confirmPopup = $ionicPopup.confirm({
      title: 'Confirm',
      template: 'Are you sure you are heading to '+ destination+'?'
@@ -229,6 +241,7 @@ angular.module('starter.controllers', [])
    }).then(function(value){
     console.log(value);
     console.log(value.status.matchicon);
+    safeChecking.start(0);
     var userinfo = $localstorage.getObject('userInfo');
     $scope.targetTime = new Date();
     $scope.targetTime.setMinutes(parseInt($scope.targetTime.getMinutes())+ parseInt($scope.time));
@@ -310,25 +323,41 @@ angular.module('starter.controllers', [])
 
 
   $scope.pickUpPts = [ "North Gate", "South Gate"];
-
+  // var infoTimer;
+  // $scope.showInfo = false;
+  // var showInfoFunc = function(){
+  //   $scope.showInfo = !$scope.showInfo;
+  //   infoTimer = $timeout(showInfoFunc, 5000);
+  // }
   $scope.$on("$ionicView.enter", function(scopes, states){
     $scope.licences = licencesManager.getLicence();
-    RideRequestService.getQueueSeatNumber(true).then(function(value){
-      $scope.statistics = value.num;
-    });
+    // RideRequestService.getQueueSeatNumber(true).then(function(value){
+    //   console.log(value);
+    //   $scope.statistics = value.num;
+    // });
+    safeChecking.end(0);
+    // infoTimer = $timeout(showInfoFunc, 5000);
   });
+
+  $scope.doRefresh = function(){
+    QueueSeatProvider.clear();
+    QueueSeatProvider.update(false);
+    $scope.$broadcast('scroll.refreshComplete');
+    $scope.$apply();
+  }
 
 
 
 })
 
-.controller('goHomeMatchCtrl', function($scope, $stateParams, $ionicHistory, $state, $timeout, Ride, $localstorage){
+.controller('matchCtrl', function($scope, $stateParams, $ionicHistory, $state, $timeout, Ride, $localstorage){
   $scope.licence = $stateParams.licence;
   $scope.targetTime = new Date($stateParams.endTime);
   $scope.location = $stateParams.location;
   $scope.destination = $stateParams.destination;
   $scope.matchicon = parseInt($stateParams.matchicon);
   $scope.doneCounting = false;
+  var counter;
 
 
   // $scope.targetTime = new Date();
@@ -342,7 +371,7 @@ angular.module('starter.controllers', [])
   $scope.goBack = function() {
     //contact the server to call off the ride
     console.log("Back");
-    $timeout.cancel($scope.counter);
+    $timeout.cancel(counter);
     $localstorage.setObject("matchInfo", {});
     if ($scope.destination ==="HKUST"){
       $state.go("tab.gohkust");
@@ -361,7 +390,7 @@ angular.module('starter.controllers', [])
     Ride.cancelRide({"leaveUst":leaveoptions}, function(value, response){
       console.log(value);
     });
-    $timeout.cancel($scope.counter);
+    $timeout.cancel(counter);
     $localstorage.setObject("matchInfo", {});
     if ($scope.destination ==="HKUST"){
       $state.go("tab.gohkust");
@@ -379,22 +408,26 @@ angular.module('starter.controllers', [])
     console.log("Counting...");
     if ($scope.targetTime > currentTime){
 
-      $scope.counter = $timeout($scope.countDownFinish, 1000)
+      counter = $timeout($scope.countDownFinish, 1000)
     }
     else{
       $scope.doneCounting = true;
     }
   }
 
-  $scope.$on("$ionicView.enter", function(scopes, states){
+  $scope.$on("$ionicView.loaded", function(scopes, states){
     if($scope.matchicon < 10)
       $scope.imglocation = "img/icon_00" + $scope.matchicon + ".png";
     else
       $scope.imglocation = "img/icon_0" + $scope.matchicon + ".png";
 
-    $scope.counter = $timeout($scope.countDownFinish, 1000);
+    counter = $timeout($scope.countDownFinish, 1000);
     
   });
+
+  $scope.$on('$destroy', function(){
+    $timeout.cancel(counter);
+  })
 
 
 
@@ -430,7 +463,7 @@ angular.module('starter.controllers', [])
 
   $scope.$on('$destroy', function(){
     $timeout.cancel(timer);
-  })
+  });
 
 
 })
@@ -569,8 +602,21 @@ angular.module('starter.controllers', [])
 })
 
 
-.controller('goustCtrl', function($scope, $ionicPopup, Ride, licencesManager, $state, $localstorage,RideRequestService, commonCallback){
+.controller('goustCtrl', function($scope, $ionicPopup, Ride, licencesManager, $state, $localstorage,RideRequestService, commonCallback, safeChecking, QueueSeatProvider){
   $scope.ready = function(destination){
+    console.log("Safe? " + safeChecking.safeToStart());
+    if (!safeChecking.safeToStart()){
+      var warningPopup = $ionicPopup.alert({
+         title: 'Error',
+         template: 'You can only initiate one offer.'
+       });
+      warningPopup.then(function(res){
+
+      }, function(error){
+
+      });
+      return;
+    }
     var confirmPopup = $ionicPopup.confirm({
      title: 'Confirm',
      template: 'Are you sure you are heading to HKUST through '+ destination +'?'
@@ -610,6 +656,7 @@ angular.module('starter.controllers', [])
    }).then(function(value){
     console.log(value);
     console.log(value.status.matchicon);
+    safeChecking.start(1);
     $scope.targetTime = new Date();
     $scope.targetTime.setMinutes(parseInt($scope.targetTime.getMinutes())+ parseInt($scope.time));
     var userinfo = $localstorage.getObject('userInfo');
@@ -658,10 +705,18 @@ angular.module('starter.controllers', [])
 
   $scope.$on("$ionicView.enter", function(scopes, states){
     $scope.licences = licencesManager.getLicence();
-    RideRequestService.getQueueSeatNumber(false).then(function(value){
-      $scope.statistics = value.num;
-    });
+    // RideRequestService.getQueueSeatNumber(false).then(function(value){
+    //   $scope.statistics = value.num;
+    // });
+    safeChecking.end(1);
   });
+
+  $scope.doRefresh = function(){
+    QueueSeatProvider.clear();
+    QueueSeatProvider.update(false);
+    $scope.$broadcast('scroll.refreshComplete');
+    $scope.$apply();
+  }
 
 
 

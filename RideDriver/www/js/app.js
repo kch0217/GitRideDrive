@@ -74,10 +74,11 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
 
   .state('tab.gohome_ready', {
     url: '/gohome/ready/:licence/:endTime/:location/:destination/:matchicon',
+    cache: false,
     views: {
       'tab-gohome': {
         templateUrl: 'templates/driver-leave2.html',
-        controller: 'goHomeMatchCtrl',
+        controller: 'matchCtrl',
         params: ['licence','endTime','location','destination', 'matchicon']
       }
     }
@@ -98,10 +99,11 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
 
   .state('tab.gohkust_ready', {
     url: '/gohkust/ready/:licence/:endTime/:location/:destination/:matchicon',
+    cache: false,
     views: {
       'tab-gohkust': {
         templateUrl: 'templates/driver-leave2.html',
-        controller: 'goHomeMatchCtrl',
+        controller: 'matchCtrl',
         params: ['licence','endTime','location','destination', 'matchicon']
       }
     }

@@ -1,5 +1,7 @@
 <ion-view view-title="Go Home">
     <ion-content padding="true" class="has-header gohome">
+    <ion-refresher pulling-text="Pull to refresh" on-refresh="doRefresh()">
+    </ion-refresher>
     <div class="control-panel">
 
         <div class="row animated fadeInDown">
@@ -25,14 +27,19 @@
 
   <div class="item item-icon-left" ng-click="ready('Choi Hung')">
     <i class="icon ion-android-train"></i>
-    Choi Hung
-    <span class="badge badge-assertive">{{statistics.chCount}}</span>
+<!--     <div ng-if="!showInfo">Choi Hung</div>
+    <div ng-if="!showInfo">Press to continue</div>
+    <div ng-if="showInfo">Number of request: {{statistics.chCount}}</div>
+    <div ng-if="showInfo">Number of seats available: {{statistics.chSeatNum}}</div> -->
+    <!-- <span class="badge badge-assertive">{{statistics.chCount}}</span> -->
+    <location-display info="true" location="Choi Hung">Choi Hung</location-display>
   </div>
 
   <div class="item item-icon-left" ng-click="ready('Hang Hau')">
     <i class="icon ion-android-train"></i>
-    Hang Hau
-    <span class="badge badge-assertive">{{statistics.hhCount}}</span>
+<!--     Hang Hau
+    <span class="badge badge-assertive">{{statistics.hhCount}}</span> -->
+    <location-display info="true" location="Hang Hau">Hang Hau</location-display>
   </div>
 
 

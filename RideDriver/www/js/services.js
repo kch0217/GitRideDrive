@@ -222,6 +222,82 @@ angular.module('starter.services', [])
       return commonCallback.defaultHandling(promise);
     }
   }
+})
+
+.service('safeChecking', function(){
+  var pageControl = [true, true];
+
+  this.safeToStart = function(page){
+    if (pageControl[0] && pageControl[1])
+      return true;
+    else
+      return false;
+  }
+
+  this.start = function(page){
+    pageControl[page] = false;
+  }
+
+  this.end = function(page){
+    pageControl[page] = true;
+  }
+
+})
+
+.service('QueueSeatProvider', function(RideRequestService){
+  var queueSeat = {'home': null, 'hkust': null};
+
+  this.update = function(leaveUst, callback){
+    if (queueSeat.home == null || queueSeat.hkust == null){
+      RideRequestService.getQueueSeatNumber(true).then(function(value){
+        console.log(value);
+        queueSeat['home'] = value.num;
+        return RideRequestService.getQueueSeatNumber(false);
+      }).then(function(value){
+        console.log(value);
+        queueSeat['hkust'] = value.num;
+      }).catch(function(error){
+        console.log(error);
+      }).finally(function(){
+        if (callback !== null){
+          // console.log(queueSeat);
+          if (leaveUst)
+            callback(queueSeat['home']);
+          else
+            callback(queueSeat['hkust']);
+        }
+      });
+    }else
+    {
+      if (callback !== null){
+        if (leaveUst)
+          callback(queueSeat['home']);
+        else
+          callback(queueSeat['hkust']);
+
+      }
+
+    }
+  }
+
+  this.clear = function(){
+    queueSeat = {'home': null, 'hkust': null};
+  }
+
+  // this.get = function(value){
+  //   if (queueSeat.home == null){
+  //     console.log(queueSeat);
+  //     console.log("updating count!")
+  //     this.update(null);
+  //   }
+
+  //   if (value)
+  //     return queueSeat['home'];
+  //   else
+  //     return queueSeat['hkust'];
+  // }
+
+
 });
 
  
