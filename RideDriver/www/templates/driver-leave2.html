@@ -120,9 +120,9 @@
 
   </ion-content>
 
-    <ion-footer-bar class="bar-assertive" ng-click="cancelOffer()" ng-if="!doneCounting">
+    <ion-footer-bar class="bar-assertive" ng-click="cancelOffer()" ng-if="!doneCounting && !cancelDisable">
 
-  <h1 class="title">Cancel</h1>
+  <h1 class="title">Cancel <span class="badge badge-assertive">{{cancelCount}}</span></h1>
 
 </ion-footer-bar>
   <ion-footer-bar class="bar-balanced" ng-click="goBack()" ng-if="doneCounting">

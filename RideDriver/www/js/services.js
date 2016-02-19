@@ -250,30 +250,42 @@ angular.module('starter.services', [])
   this.update = function(leaveUst, callback){
     if (queueSeat.home == null || queueSeat.hkust == null){
       RideRequestService.getQueueSeatNumber(true).then(function(value){
-        console.log(value);
+        console.log("QueueSeatProvider Leave UST", value);
         queueSeat['home'] = value.num;
         return RideRequestService.getQueueSeatNumber(false);
       }).then(function(value){
-        console.log(value);
+        console.log("QueueSeatProvider Go UST", value);
         queueSeat['hkust'] = value.num;
       }).catch(function(error){
         console.log(error);
       }).finally(function(){
         if (callback !== null){
           // console.log(queueSeat);
-          if (leaveUst)
+          console.log(leaveUst);
+          if (leaveUst =="true"){
+            console.log("QueueSeatProvider return home", callback);
             callback(queueSeat['home']);
-          else
+          }
+          else{
+            console.log("QueueSeatProvider going hkust", callback);
             callback(queueSeat['hkust']);
+          }
+            
         }
       });
     }else
     {
       if (callback !== null){
-        if (leaveUst)
+        // console.log("QueueSeatProvider no update callback", leaveUst, callback);
+        if (leaveUst == "true"){
+          // console.log("QueueSeatProvider no update callback 2", queueSeat['home']);
           callback(queueSeat['home']);
-        else
+        }
+        else{
+          // console.log("QueueSeatProvider no update callback 3", queueSeat['hkust']);
           callback(queueSeat['hkust']);
+        }
+          
 
       }
 

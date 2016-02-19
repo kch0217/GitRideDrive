@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 'starter.services','starter.directives', 'ngResource', 'lbServices'])
+angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 'starter.services','starter.directives', 'ngResource', 'lbServices','starter.constants'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -73,13 +73,12 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
   })
 
   .state('tab.gohome_ready', {
-    url: '/gohome/ready/:licence/:endTime/:location/:destination/:matchicon',
-    cache: false,
+    url: '/gohome/ready/:licence/:endTime/:location/:destination/:matchicon/:cancelTime',
     views: {
       'tab-gohome': {
         templateUrl: 'templates/driver-leave2.html',
         controller: 'matchCtrl',
-        params: ['licence','endTime','location','destination', 'matchicon']
+        params: ['licence','endTime','location','destination', 'matchicon', 'cancelTime']
       }
     }
   })
@@ -98,13 +97,12 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
     })
 
   .state('tab.gohkust_ready', {
-    url: '/gohkust/ready/:licence/:endTime/:location/:destination/:matchicon',
-    cache: false,
+    url: '/gohkust/ready/:licence/:endTime/:location/:destination/:matchicon/:cancelTime',
     views: {
       'tab-gohkust': {
         templateUrl: 'templates/driver-leave2.html',
         controller: 'matchCtrl',
-        params: ['licence','endTime','location','destination', 'matchicon']
+        params: ['licence','endTime','location','destination', 'matchicon', 'cancelTime']
       }
     }
   })

@@ -1,4 +1,8 @@
-<div ng-if="!showInfo"><ng-transclude></ng-transclude></div>
+<!-- <div ng-if="!showInfo"><ng-transclude></ng-transclude></div>
 <div ng-if="!showInfo">Press to continue</div>
 <div ng-if="showInfo">Number of request: {{requestCount}}</div>
-<div ng-if="showInfo">Number of seats available: {{offerNum}}</div>
+<div ng-if="showInfo">Number of seats available: {{offerNum}}</div> -->
+
+<div><b><ng-transclude></ng-transclude></b></div>
+<div>Number of requests: {{requestCount}}</div>
+<div>Number of seats available: {{offerNum}}</div>

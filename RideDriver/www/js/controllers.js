@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('signCtrl', function($scope, $state,$ionicPopup, LoopBackAuth, userRegister, pushRegister, $ionicHistory, $localstorage, LoginService, $ionicLoading, loadingService){
+.controller('signCtrl', function($scope, $state,$ionicPopup, userRegister, pushRegister, $ionicHistory, $localstorage, LoginService, $ionicLoading, loadingService, licencesManager){
 
   $scope.signin = function(info){
     loadingService.start($ionicLoading);
@@ -25,10 +25,12 @@ angular.module('starter.controllers', [])
       if (previousInfo == null || JSON.stringify(previousInfo) === "{}" || currentTime >= targetTime || userinfo.email !== previousInfo.owner)
         $state.go('tab.gohome');
       else if (previousInfo.destination === "HKUST"){
-        $state.go('tab.gohkust_ready',{"licence":previousInfo.licence,"endTime":previousInfo.endTime,'location': previousInfo.location, 'destination': "HKUST", 'matchicon': previousInfo.matchicon});
+        licencesManager.getLicenceFromServer(null);
+        $state.go('tab.gohkust_ready',{"licence":previousInfo.licence,"endTime":previousInfo.endTime,'location': previousInfo.location, 'destination': "HKUST", 'matchicon': previousInfo.matchicon, 'cancelTime': previousInfo.cancelTime});
       }
       else{
-        $state.go('tab.gohome_ready',{"licence":previousInfo.licence,"endTime":previousInfo.endTime,'location': previousInfo.location, 'destination': previousInfo.destination, 'matchicon': previousInfo.matchicon});
+        licencesManager.getLicenceFromServer(null);
+        $state.go('tab.gohome_ready',{"licence":previousInfo.licence,"endTime":previousInfo.endTime,'location': previousInfo.location, 'destination': previousInfo.destination, 'matchicon': previousInfo.matchicon, 'cancelTime': previousInfo.cancelTime});
       }
     }).catch(function(error){
       var alertPopup = $ionicPopup.alert({
@@ -187,7 +189,7 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('goHomeCtrl',function($scope, $state, $ionicHistory, $ionicPopup, Member, pushRegister, licencesManager, $localstorage, commonCallback, RideRequestService, safeChecking, QueueSeatProvider){
+.controller('goHomeCtrl',function($scope, $state, $ionicHistory, $ionicPopup, Member, pushRegister, licencesManager, $localstorage, commonCallback, RideRequestService, safeChecking, QueueSeatProvider, RIDE_CONFIG){
   $scope.ready = function(destination){
     if (!safeChecking.safeToStart()){
       var warningPopup = $ionicPopup.alert({
@@ -201,52 +203,50 @@ angular.module('starter.controllers', [])
       });
       return;
     }
-    var confirmPopup = $ionicPopup.confirm({
-     title: 'Confirm',
-     template: 'Are you sure you are heading to '+ destination+'?'
-   });
+   //  var confirmPopup = $ionicPopup.confirm({
+   //   title: 'Confirm',
+   //   template: 'Are you sure you are heading to '+ destination+'?'
+   // });
 
     var targetTime = null;
 
-   confirmPopup.then(function(res) {
-     if(res) {
-        // console.log('You are sure');
-        if (destination == 'Hang Hau'){
-          $scope.pickUpPt = $scope.pickUpPts[0];
-        }
-        else
-          $scope.pickUpPt = $scope.pickUpPts[1];
-        
-        targetTime = new Date();
-        targetTime.setMinutes(parseInt(targetTime.getMinutes())+ $scope.time);
-        // console.log(targetTime.toJSON());
-        console.log(targetTime);
-        $scope.genderPreferred = $localstorage.get("genderPreference", "false");
 
-        var info = {
-          "license_number": $scope.licence,
-          "beforeArrive": $scope.time,
-          "seat_number": $scope.numOfPassenger,
-          "destination_name": destination,
-          "time": targetTime.toJSON(),
-          "gender_preference": ($scope.genderPreferred === "true"),
-          "leaveUst": true
-        };
-        return RideRequestService.addRide(info);
-        
+    // console.log('You are sure');
+    if (destination == 'Hang Hau'){
+      $scope.pickUpPt = $scope.pickUpPts[0];
+    }
+    else
+      $scope.pickUpPt = $scope.pickUpPts[1];
+    
+    targetTime = new Date();
+    targetTime.setMinutes(parseInt(targetTime.getMinutes())+ $scope.time);
+    // console.log(targetTime.toJSON());
+    console.log(targetTime);
+    $scope.genderPreferred = $localstorage.get("genderPreference", "false");
 
-     } else {
-       return commonCallback.emptyErrorHandling();
-     }
-   }).then(function(value){
-    console.log(value);
-    console.log(value.status.matchicon);
-    safeChecking.start(0);
-    var userinfo = $localstorage.getObject('userInfo');
-    $scope.targetTime = new Date();
-    $scope.targetTime.setMinutes(parseInt($scope.targetTime.getMinutes())+ parseInt($scope.time));
-    $localstorage.setObject('matchInfo', {"owner": userinfo.email, "licence":$scope.licence,"endTime":$scope.targetTime,'location': $scope.pickUpPt, 'destination': destination, 'matchicon': value.status.matchicon});
-    $state.go('tab.gohome_ready',{"licence":$scope.licence,"endTime":$scope.targetTime,'location': $scope.pickUpPt, 'destination': destination, 'matchicon': value.status.matchicon});
+    var info = {
+      "license_number": $scope.licence,
+      "beforeArrive": $scope.time,
+      "seat_number": $scope.numOfPassenger,
+      "destination_name": destination,
+      "time": targetTime.toJSON(),
+      "gender_preference": ($scope.genderPreferred === "true"),
+      "leaveUst": true
+    };
+    RideRequestService.addRide(info).then(function(value){
+      console.log(value);
+      console.log(value.status.matchicon);
+      safeChecking.start(0);
+      var userinfo = $localstorage.getObject('userInfo');
+      $scope.targetTime = new Date();
+      $scope.targetTime.setMinutes(parseInt($scope.targetTime.getMinutes())+ parseInt($scope.time));
+      
+      var cancelTime = new Date();
+      cancelTime.setMinutes(parseInt(cancelTime.getMinutes()) + 1);
+
+      $localstorage.setObject('leavePreference', {"owner": userinfo.email, "licence": $scope.licence, "time": $scope.time, "seat_number": $scope.numOfPassenger});
+      $localstorage.setObject('matchInfo', {"owner": userinfo.email, "licence":$scope.licence,"endTime":$scope.targetTime,'location': $scope.pickUpPt, 'destination': destination, 'matchicon': value.status.matchicon, 'cancelTime': cancelTime});
+      $state.go('tab.gohome_ready',{"licence":$scope.licence,"endTime":$scope.targetTime,'location': $scope.pickUpPt, 'destination': destination, 'matchicon': value.status.matchicon, 'cancelTime': cancelTime});
 
    }).catch(function(error){
     console.log(error);
@@ -260,9 +260,9 @@ angular.module('starter.controllers', [])
   // });
 
 
-  $scope.time = 7;
+  $scope.time = RIDE_CONFIG.DEFAULT_TIME;
   $scope.modifyTime = function(value){
-    if ($scope.time + value > 1){
+    if (($scope.time + value >= RIDE_CONFIG.MIN_TIME) && ($scope.time + value <= RIDE_CONFIG.MAX_TIME)){
       // console.log($scope.time + value);
       $scope.time = $scope.time + value;
     }
@@ -336,13 +336,29 @@ angular.module('starter.controllers', [])
     //   $scope.statistics = value.num;
     // });
     safeChecking.end(0);
+    var preference = $localstorage.getObject('leavePreference');
+    var userinfo = $localstorage.getObject('userInfo');
+    if (!(userinfo == null || JSON.stringify(userinfo) == "{}")){
+
+      if (!(preference == null || JSON.stringify(preference) == "{}" || userinfo.email != preference.owner)){
+        $scope.time = preference.time;
+        $scope.numOfPassenger = preference.seat_number;
+        if ($scope.licences.indexOf(preference.licence) >= 0)
+        {
+          $scope.licenceIndex = $scope.licences.indexOf(preference.licence);
+          $scope.licence = $scope.licences[$scope.licenceIndex];
+        }
+      }
+    }
+
+
     // infoTimer = $timeout(showInfoFunc, 5000);
   });
 
   $scope.doRefresh = function(){
     QueueSeatProvider.clear();
-    QueueSeatProvider.update(false);
-    $scope.$broadcast('scroll.refreshComplete');
+    QueueSeatProvider.update(true, null);
+    $scope.$broadcast('scroll.refreshComplete', {"leaveUst": true});
     $scope.$apply();
   }
 
@@ -357,7 +373,10 @@ angular.module('starter.controllers', [])
   $scope.destination = $stateParams.destination;
   $scope.matchicon = parseInt($stateParams.matchicon);
   $scope.doneCounting = false;
+  var cancelTime = new Date($stateParams.cancelTime);
+  $scope.cancelDisable = true;
   var counter;
+  $scope.cancelCount = 0;
 
 
   // $scope.targetTime = new Date();
@@ -407,6 +426,12 @@ angular.module('starter.controllers', [])
     var currentTime = new Date();
     console.log("Counting...");
     if ($scope.targetTime > currentTime){
+      if (cancelTime < currentTime)
+        $scope.cancelDisable = true;
+      else{
+        $scope.cancelDisable = false;
+        $scope.cancelCount = Math.floor((cancelTime - currentTime)/1000);
+      }
 
       counter = $timeout($scope.countDownFinish, 1000)
     }
@@ -422,6 +447,7 @@ angular.module('starter.controllers', [])
       $scope.imglocation = "img/icon_0" + $scope.matchicon + ".png";
 
     counter = $timeout($scope.countDownFinish, 1000);
+    console.log("Loaded");
     
   });
 
@@ -439,14 +465,17 @@ angular.module('starter.controllers', [])
   console.log(targetTime);
   $scope.displayTime = null;
   var timer;
-
+  // $scope.test = "0";
 
   
 
   $scope.startTime = function(){
     console.log("Directive counting...");
     var currentTime = new Date();
+
+
     if (targetTime > currentTime){
+      // console.log("Calculating difference");
       var difference = targetTime.getTime() - currentTime.getTime();
       difference = difference/1000;
       var second = Math.floor(difference % 60);
@@ -455,15 +484,26 @@ angular.module('starter.controllers', [])
       if (second < 10){
         second = '0' + second;
       }
-      $scope.displayTime = minute + ' : ' + second;
+      $scope.displayTime = minute.toString() + ' : ' + second.toString();
+      // $scope.test = $scope.test+ "0";
+      // $scope.displayTime1 = minute.toString() + ' : ' + second.toString();
+      console.log($scope.displayTime);
+
       timer = $timeout($scope.startTime, 1000)
     }
+    else{
+      $scope.displayTime = 0 + ' : ' + '00';
+    }
+      
     
   }
 
   $scope.$on('$destroy', function(){
+    $scope.displayTime = 0 + ' : ' + '00';
     $timeout.cancel(timer);
   });
+
+  $scope.startTime();
 
 
 })
@@ -510,6 +550,8 @@ angular.module('starter.controllers', [])
       pushRegister.unregister();
       $localstorage.setObject('userInfo', null);
       $localstorage.set('genderPreference', null);
+      $localstorage.set('leavePreference', null);
+      $localstorage.set('goPreference', null);
       $state.go('signIn');
 
     }, function(error){
@@ -602,7 +644,7 @@ angular.module('starter.controllers', [])
 })
 
 
-.controller('goustCtrl', function($scope, $ionicPopup, Ride, licencesManager, $state, $localstorage,RideRequestService, commonCallback, safeChecking, QueueSeatProvider){
+.controller('goustCtrl', function($scope, $ionicPopup, Ride, licencesManager, $state, $localstorage,RideRequestService, commonCallback, safeChecking, QueueSeatProvider, RIDE_CONFIG){
   $scope.ready = function(destination){
     console.log("Safe? " + safeChecking.safeToStart());
     if (!safeChecking.safeToStart()){
@@ -617,51 +659,48 @@ angular.module('starter.controllers', [])
       });
       return;
     }
-    var confirmPopup = $ionicPopup.confirm({
-     title: 'Confirm',
-     template: 'Are you sure you are heading to HKUST through '+ destination +'?'
-   });
+   //  var confirmPopup = $ionicPopup.confirm({
+   //   title: 'Confirm',
+   //   template: 'Are you sure you are heading to HKUST through '+ destination +'?'
+   // });
 
-   confirmPopup.then(function(res) {
-     if(res) {
-        console.log('You are sure');
-        // if (destination == 'Hang Hau'){
-          // $scope.pickUpPt = $scope.pickUpPts[0];
-        // }
-        // else
-          // $scope.pickUpPt = $scope.pickUpPts[1];
-        
-        var targetTime = new Date();
-        console.log(targetTime);
-        targetTime.setMinutes(parseInt(targetTime.getMinutes())+ $scope.time);
-        // console.log(targetTime.toJSON());
-        console.log(targetTime);
-        $scope.genderPreferred = $localstorage.get("genderPreference", "false");
+    console.log('You are sure');
+    // if (destination == 'Hang Hau'){
+      // $scope.pickUpPt = $scope.pickUpPts[0];
+    // }
+    // else
+      // $scope.pickUpPt = $scope.pickUpPts[1];
+    
+    var targetTime = new Date();
+    console.log(targetTime);
+    targetTime.setMinutes(parseInt(targetTime.getMinutes())+ $scope.time);
+    // console.log(targetTime.toJSON());
+    console.log(targetTime);
+    $scope.genderPreferred = $localstorage.get("genderPreference", "false");
 
-        var info = {
-          "license_number": $scope.licence,
-          "beforeArrive": $scope.time,
-          "seat_number": $scope.numOfPassenger,
-          "destination_name": destination,
-          "time": targetTime.toJSON(),
-          "gender_preference": ($scope.genderPreferred === "true"),
-          "leaveUst": false
-        };
-        return RideRequestService.addRide(info);
-        
+    var info = {
+      "license_number": $scope.licence,
+      "beforeArrive": $scope.time,
+      "seat_number": $scope.numOfPassenger,
+      "destination_name": destination,
+      "time": targetTime.toJSON(),
+      "gender_preference": ($scope.genderPreferred === "true"),
+      "leaveUst": false
+    };
+    RideRequestService.addRide(info)
+    .then(function(value){
+        console.log(value);
+        console.log(value.status.matchicon);
+        safeChecking.start(1);
+        $scope.targetTime = new Date();
+        $scope.targetTime.setMinutes(parseInt($scope.targetTime.getMinutes())+ parseInt($scope.time));
+        var cancelTime = new Date();
+        cancelTime.setMinutes(parseInt(cancelTime.getMinutes())+1);
 
-     } else {
-       return commonCallback.emptyErrorHandling();
-     }
-   }).then(function(value){
-    console.log(value);
-    console.log(value.status.matchicon);
-    safeChecking.start(1);
-    $scope.targetTime = new Date();
-    $scope.targetTime.setMinutes(parseInt($scope.targetTime.getMinutes())+ parseInt($scope.time));
-    var userinfo = $localstorage.getObject('userInfo');
-    $localstorage.setObject('matchInfo', {"owner": userinfo.email, "licence":$scope.licence,"endTime":$scope.targetTime,'location': destination, 'destination': "HKUST", 'matchicon': value.status.matchicon});
-    $state.go('tab.gohkust_ready',{"licence":$scope.licence,"endTime":$scope.targetTime,'location': destination, 'destination': "HKUST", 'matchicon': value.status.matchicon});
+        var userinfo = $localstorage.getObject('userInfo');
+        $localstorage.setObject('goPreference', {"owner": userinfo.email, "licence": $scope.licence, "time": $scope.time, "seat_number": $scope.numOfPassenger});
+        $localstorage.setObject('matchInfo', {"owner": userinfo.email, "licence":$scope.licence,"endTime":$scope.targetTime,'location': destination, 'destination': "HKUST", 'matchicon': value.status.matchicon, 'cancelTime': cancelTime});
+        $state.go('tab.gohkust_ready',{"licence":$scope.licence,"endTime":$scope.targetTime,'location': destination, 'destination': "HKUST", 'matchicon': value.status.matchicon, 'cancelTime': cancelTime});
 
    }).catch(function(error){
     console.log(error);
@@ -676,9 +715,9 @@ angular.module('starter.controllers', [])
   $scope.licences = licencesManager.getLicence();
   $scope.licence = $scope.licences[$scope.licenceIndex];
 
-  $scope.time = 7;
+  $scope.time = RIDE_CONFIG.DEFAULT_TIME;
   $scope.modifyTime = function(value){
-    if ($scope.time + value > 1)
+    if (($scope.time + value >= RIDE_CONFIG.MIN_TIME) &&($scope.time + value <= RIDE_CONFIG.MAX_TIME))
       $scope.time = $scope.time + value;
   }
 
@@ -709,12 +748,26 @@ angular.module('starter.controllers', [])
     //   $scope.statistics = value.num;
     // });
     safeChecking.end(1);
+    var preference = $localstorage.getObject('goPreference');
+    var userinfo = $localstorage.getObject('userInfo');
+    if (!(userinfo == null || JSON.stringify(userinfo) == "{}")){
+
+      if (!(preference == null || JSON.stringify(preference) == "{}" || userinfo.email != preference.owner)){
+        $scope.time = preference.time;
+        $scope.numOfPassenger = preference.seat_number;
+        if ($scope.licences.indexOf(preference.licence) >= 0)
+        {
+          $scope.licenceIndex = $scope.licences.indexOf(preference.licence);
+          $scope.licence = $scope.licences[$scope.licenceIndex];
+        }
+      }
+    }
   });
 
   $scope.doRefresh = function(){
     QueueSeatProvider.clear();
-    QueueSeatProvider.update(false);
-    $scope.$broadcast('scroll.refreshComplete');
+    QueueSeatProvider.update(false, null);
+    $scope.$broadcast('scroll.refreshComplete', {"leaveUst": false});
     $scope.$apply();
   }
 

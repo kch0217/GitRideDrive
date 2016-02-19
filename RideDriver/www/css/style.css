@@ -145,6 +145,17 @@ button.additionalB:active:focus, button.additionalB.active:focus, button.submitB
     border: none;
 }
 
+.item.ChoiHung {
+	color: white;
+	background-color: rgba(79,167, 74, 0.8);
+}
+
+.item.HangHau{
+	color: white;
+
+	background-color: rgba(153, 106, 178, 0.8);
+}
+
 .no-border{
 	border:none;
 }
