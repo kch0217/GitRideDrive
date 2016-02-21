@@ -5,9 +5,9 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 'starter.services','starter.directives', 'ngResource', 'lbServices','starter.constants'])
+angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 'starter.services','starter.directives', 'ngResource', 'lbServices','starter.constants', 'ngCordova'])
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform, $rootScope) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -20,10 +20,13 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
       // org.apache.cordova.statusbar required
       StatusBar.styleLightContent();
     }
+    
   });
   $ionicPlatform.registerBackButtonAction(function (event) {
                     event.preventDefault();
             }, 100);
+
+  
 
 })
 
@@ -147,6 +150,6 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
 .config(function(LoopBackResourceProvider){
   // Change the URL where to access the LoopBack REST API server
     // LoopBackResourceProvider.setUrlBase('http://ridesharingfyp.ddns.net:3000/api');
-    LoopBackResourceProvider.setUrlBase('http://192.168.0.110:3000/api');
+    LoopBackResourceProvider.setUrlBase('http://192.168.0.111:3000/api');
  
 });

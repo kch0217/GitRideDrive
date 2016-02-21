@@ -3,7 +3,7 @@
       <ion-nav-title>
       {{action}} Your Car
     </ion-nav-title>
-    <ion-nav-buttons side="left">
+<!--     <ion-nav-buttons side="left">
     <div class="buttons">
       <button class="button" ng-click="closeModal()">
         Close
@@ -14,7 +14,7 @@
       <button class="button" ng-click="confirm()">
         Save
       </button></div>
-    </ion-nav-buttons>
+    </ion-nav-buttons> -->
   </ion-nav-bar>
   <ion-content>
   <br/><br/>
@@ -23,20 +23,25 @@
     <label class="item item-divider" ng-if="action == 'Edit'">Car Licence Number: {{chosen.license_number}}</label>
     <label class="item item-input item-stacked-label" ng-if="action == 'Create'">
       <span class="input-label">Car licence number</span>
-      <input type="text" placeholder="" ng-model="chosen.license_number" required name="license_number">
+      <input type="text" placeholder="" ng-model="chosen.license_number" required name="license_number" required>
     </label>
     <label class="item item-input item-stacked-label">
       <span class="input-label">Color</span>
-      <input type="text" placeholder="" ng-model="chosen.color" required name="color">
+      <input type="text" placeholder="" ng-model="chosen.color" required name="color" required>
     </label>
 
     <label class="item item-input item-stacked-label">
       <span class="input-label">Manufacturer</span>
-      <input type="text" placeholder="" ng-model="chosen.maker" required name="maker">
+      <input type="text" placeholder="" ng-model="chosen.maker" required name="maker" required>
     </label>
 
 
   </form>
+  <br><br>
+  <div class="button-bar">
+    <button class="button button-balanced" style="border-radius: 18px;" ng-click="confirm()" ng-disabled="carForm.$error.required">Confirm</button>
+    <button class="button button-dark" ng-click="closeModal()" style="border-radius: 18px;">Cancel</button>
+  </div>
 
 
 </ion-content>

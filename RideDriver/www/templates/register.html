@@ -80,14 +80,16 @@
         
             </label> -->
             <label class="item item-input item-stacked-label">
-                <span class="input-label">Your HKUST email address</span>
-                <div style="color:red" ng-show="myForm2.email.$dirty && (myForm2.email.$error.required || myForm2.email.$invalid || myForm2.email.$error.domainCheck)">
+                <div class="input-label">Your email address</div>
+                <div style="color:red" class="item-text-wrap" ng-hide="myForm2.email.$dirty && (myForm2.email.$error.required || myForm2.email.$invalid)">*Non-HKUST email requires extra verification</div>
+                <div style="color:red" ng-show="myForm2.email.$dirty && (myForm2.email.$error.required || myForm2.email.$invalid)">
               Incorrect email
               </div>
                 <input type="email" placeholder="" ng-model="info.email" name="email" domain-check required>
             </label>
         </div>
       </form>
+
 <br>
         <div class="list registerbox">
             <label class="item item-divider register">
@@ -138,7 +140,7 @@
         </div>
         
         <div class="button-bar">
-          <button class="button button-balanced" style="border-radius: 18px;" ng-click="confirm()" ng-disabled="myForm.$error.required || myForm.$error.compareTo || myForm2.$error.email || myForm2.$error.required || myForm2.$error.domainCheck">Confirm</button>
+          <button class="button button-balanced" style="border-radius: 18px;" ng-click="confirm()" ng-disabled="myForm.$error.required || myForm.$error.compareTo || myForm2.$error.email || myForm2.$error.required">Confirm</button>
           <button class="button button-dark" ng-click="reset()" style="border-radius: 18px;">Reset</button>
         </div>
     </ion-content>

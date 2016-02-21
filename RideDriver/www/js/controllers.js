@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('signCtrl', function($scope, $state,$ionicPopup, userRegister, pushRegister, $ionicHistory, $localstorage, LoginService, $ionicLoading, loadingService, licencesManager){
+.controller('signCtrl', function($scope, $state,$ionicPopup, userRegister, pushRegister, $ionicHistory, $localstorage, LoginService, $ionicLoading, loadingService, licencesManager, pushIDManager){
 
   $scope.signin = function(info){
     loadingService.start($ionicLoading);
@@ -8,9 +8,12 @@ angular.module('starter.controllers', [])
     console.log(info.email);
     console.log(info.password);
 
+    // connectDevice.register();
+
     LoginService.login(info).then(function(value){
-      userRegister.register();
-      pushRegister.register();
+      // userRegister.register();
+      // pushRegister.register();
+      pushIDManager.init();
       $localstorage.setObject('userInfo',{'email':info.email, 'pw': info.password});
 
       return LoginService.getGenderPreference();
@@ -299,8 +302,26 @@ angular.module('starter.controllers', [])
 
        });
     }
-    else
-      $scope.licence = $scope.licences[$scope.licenceIndex];
+    else{
+      var preference = $localstorage.getObject('leavePreference');
+      var userinfo = $localstorage.getObject('userInfo');
+      if (!(userinfo == null || JSON.stringify(userinfo) == "{}")){
+        if (!(preference == null || JSON.stringify(preference) == "{}" || userinfo.email != preference.owner)){
+          if ($scope.licences.indexOf(preference.licence) >= 0)
+          {
+            $scope.licenceIndex = $scope.licences.indexOf(preference.licence);
+            $scope.licence = $scope.licences[$scope.licenceIndex];
+          }
+          else
+            $scope.licence = $scope.licences[$scope.licenceIndex];
+        }
+        else
+          $scope.licence = $scope.licences[$scope.licenceIndex];
+      }
+      else
+        $scope.licence = $scope.licences[$scope.licenceIndex];
+    }
+      
   }
 
   licencesManager.getLicenceFromServer(checkVehicle);
@@ -342,13 +363,19 @@ angular.module('starter.controllers', [])
 
       if (!(preference == null || JSON.stringify(preference) == "{}" || userinfo.email != preference.owner)){
         $scope.time = preference.time;
+        console.log("Preference is ", preference.licence);
         $scope.numOfPassenger = preference.seat_number;
-        if ($scope.licences.indexOf(preference.licence) >= 0)
-        {
-          $scope.licenceIndex = $scope.licences.indexOf(preference.licence);
-          $scope.licence = $scope.licences[$scope.licenceIndex];
-        }
+        // console.log($scope.licences.indexOf(preference.licence), $scope.licences);
+        // if ($scope.licences.indexOf(preference.licence) >= 0)
+        // {
+        //   $scope.licenceIndex = $scope.licences.indexOf(preference.licence);
+        //   $scope.licence = $scope.licences[$scope.licenceIndex];
+        // }
       }
+    }
+
+    if ($scope.licences.length > 0 && $scope.licences.indexOf($scope.licence) < 0){
+      $scope.licence = $scope.licences[0];
     }
 
 
@@ -547,7 +574,7 @@ angular.module('starter.controllers', [])
 
   $scope.logout = function(){
     Member.logout({}, function(value, responseheader){
-      pushRegister.unregister();
+      // pushRegister.unregister();
       $localstorage.setObject('userInfo', null);
       $localstorage.set('genderPreference', null);
       $localstorage.set('leavePreference', null);
@@ -762,6 +789,10 @@ angular.module('starter.controllers', [])
         }
       }
     }
+
+    if ($scope.licences.indexOf($scope.licence) < 0){
+      $scope.licence = $scope.licences[0];
+    }
   });
 
   $scope.doRefresh = function(){
@@ -815,6 +846,7 @@ angular.module('starter.controllers', [])
       $scope.chosen.id = $scope.carInfo[$scope.selected].id;
       $scope.action = "Edit";
     } else {
+      console.log("Create");
       $scope.action = "Create";
     }
 
@@ -876,9 +908,12 @@ angular.module('starter.controllers', [])
   }
 
   $scope.verifyDeleteEmpty = function(){
+    // console.log($scope.carInfo.length);
     if ($scope.carInfo.length ==1){
       return false;
     }
+    else
+      return true;
   }
 
   $scope.updatelist = function(){
@@ -933,6 +968,17 @@ angular.module('starter.controllers', [])
   $scope.$on('$destroy', function() {
     $scope.modal.remove();
   });
+
+  $scope.deleteCtrl = function(index){
+    // console.log(index);
+    if (!$scope.verifyDeleteEmpty()) 
+      return;
+    console.log(index);
+    $scope.copyToPending(); 
+    $scope.carInfo.splice(index, 1); 
+    $scope.deleteStatus(index); 
+    $scope.updatelist();
+  }
 
 })
 

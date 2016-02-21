@@ -261,9 +261,9 @@ angular.module('starter.services', [])
       }).finally(function(){
         if (callback !== null){
           // console.log(queueSeat);
-          console.log(leaveUst);
+          // console.log(leaveUst);
           if (leaveUst =="true"){
-            console.log("QueueSeatProvider return home", callback);
+            // console.log("QueueSeatProvider return home", callback);
             callback(queueSeat['home']);
           }
           else{
@@ -308,6 +308,99 @@ angular.module('starter.services', [])
   //   else
   //     return queueSeat['hkust'];
   // }
+
+
+})
+
+// .service('connectDevice', function($cordovaPush, $cordovaToast){
+
+//   this.register = function(){
+//     console.log(ionic);
+//     if (ionic.Platform.isAndroid()) {
+//         config = {
+//             "senderID": "721443256606" // REPLACE THIS WITH YOURS FROM GCM CONSOLE - also in the project URL like: https://console.developers.google.com/project/434205989073
+//         };
+//     }
+//     else if (ionic.Platform.isIOS()) {
+//       config = {
+//         "badge": "true",
+//         "sound": "true",
+//         "alert": "true"
+//       }
+//     }
+//     console.log($cordovaPush);
+//     $cordovaPush.register(config).then(function (result) {
+//       console.log("Register success " + result);
+
+//       $cordovaToast.showShortCenter('Registered for push notifications');
+//       $scope.registerDisabled=true;
+//       // ** NOTE: Android regid result comes back in the pushNotificationReceived, only iOS returned here
+//       if (ionic.Platform.isIOS()) {
+//         $scope.regId = result;
+//         storeDeviceToken("ios");
+//       }
+//     }, function (err) {
+//       console.log("Register error " + err)
+//     });
+//   }
+// })
+
+.service("pushIDManager", function($ionicPlatform, Member, $rootScope){
+  var gcmID;
+  var push;
+  var manager = this;
+
+  this.init = function(){
+    return;
+    $ionicPlatform.ready(function(){
+      push = PushNotification.init({
+        android:{
+          senderID: "721443256606"
+        },
+        ios: {
+          
+          "badge": "true",
+          "sound": "true",
+          "alert": "true"
+        
+        },
+        windows: {}
+      });
+
+      push.on('registration', function(data){
+        console.log("receive data", data);
+        manager.registerGCM(data.registrationId);
+        Member.updateToken({'deviceToken': data.registrationId}, function(value, responseheaders){
+          console.log(value);
+        }, function(error){
+          console.log(error);
+        });
+
+      });
+
+      push.on('notification', function(data) {
+        // console.log(data.message);
+        // console.log(data.title);
+        // console.log(data.count);
+        // console.log(data.sound);
+        // console.log(data.image);
+        console.log("Received push", data.additionalData);
+
+
+      });
+
+      push.on('error', function(e) {
+        console.log(e.message);
+      });
+
+
+    });
+    
+  }
+
+  this.registerGCM = function(id){
+    gcmID = id;
+  }
 
 
 });
