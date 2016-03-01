@@ -351,7 +351,7 @@ angular.module('starter.services', [])
   var manager = this;
 
   this.init = function(){
-    return;
+    // return;
     $ionicPlatform.ready(function(){
       push = PushNotification.init({
         android:{
@@ -385,6 +385,10 @@ angular.module('starter.services', [])
         // console.log(data.sound);
         // console.log(data.image);
         console.log("Received push", data.additionalData);
+        var pushData = data.additionalData;
+        if (pushData.status =="A0"){
+          $rootScope.$broadcast('updatePassenger', {"num": pushData.joinNum});
+        }
 
 
       });

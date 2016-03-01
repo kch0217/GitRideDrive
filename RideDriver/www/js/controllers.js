@@ -121,6 +121,11 @@ angular.module('starter.controllers', [])
      template: 'Do you want to submit the data?'
     });
 
+    //handle the email
+    if ($scope.info.hkustMember){
+      $scope.info.email += "@ust.hk"
+    }
+
     var datasent = { "first_name": $scope.info.firstname,
                         "last_name": $scope.info.lastname,
                         "phone_number": parseInt($scope.info.phonenumber),
@@ -192,7 +197,7 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('goHomeCtrl',function($scope, $state, $ionicHistory, $ionicPopup, Member, pushRegister, licencesManager, $localstorage, commonCallback, RideRequestService, safeChecking, QueueSeatProvider, RIDE_CONFIG){
+.controller('goHomeCtrl',function($scope, $state, $ionicHistory, $ionicPopup, Member, pushRegister, licencesManager, $localstorage, commonCallback, RideRequestService, safeChecking, QueueSeatProvider, RIDE_CONFIG, loadingService, $ionicLoading){
   $scope.ready = function(destination){
     if (!safeChecking.safeToStart()){
       var warningPopup = $ionicPopup.alert({
@@ -236,6 +241,8 @@ angular.module('starter.controllers', [])
       "gender_preference": ($scope.genderPreferred === "true"),
       "leaveUst": true
     };
+
+    loadingService.start($ionicLoading);
     RideRequestService.addRide(info).then(function(value){
       console.log(value);
       console.log(value.status.matchicon);
@@ -253,6 +260,8 @@ angular.module('starter.controllers', [])
 
    }).catch(function(error){
     console.log(error);
+   }).finally(function(){
+    loadingService.end($ionicLoading);
    });
 
 
@@ -404,6 +413,7 @@ angular.module('starter.controllers', [])
   $scope.cancelDisable = true;
   var counter;
   $scope.cancelCount = 0;
+  $scope.numOfPassenger = 0;
 
 
   // $scope.targetTime = new Date();
@@ -419,6 +429,14 @@ angular.module('starter.controllers', [])
     console.log("Back");
     $timeout.cancel(counter);
     $localstorage.setObject("matchInfo", {});
+    var leaveoptions = true;
+    if ($scope.destination ==="HKUST"){
+      leaveoptions = false;
+    }
+
+    Ride.cancelRide({"leaveUst":leaveoptions, "byDriver": false}, function(value, response){
+      console.log(value);
+    });
     if ($scope.destination ==="HKUST"){
       $state.go("tab.gohkust");
     }
@@ -427,13 +445,13 @@ angular.module('starter.controllers', [])
     }
     //$ionicHistory.goBack();
   };
-// add object leaveUst
+
   $scope.cancelOffer = function(){
     var leaveoptions = true;
     if ($scope.destination ==="HKUST"){
       leaveoptions = false;
     }
-    Ride.cancelRide({"leaveUst":leaveoptions}, function(value, response){
+    Ride.cancelRide({"leaveUst":leaveoptions, "byDriver": true}, function(value, response){
       console.log(value);
     });
     $timeout.cancel(counter);
@@ -480,6 +498,14 @@ angular.module('starter.controllers', [])
 
   $scope.$on('$destroy', function(){
     $timeout.cancel(counter);
+  })
+
+  $scope.$on('updatePassenger', function(event, args){
+    console.log("received an update number of passenger");
+    if (args.num != null){
+      $scope.numOfPassenger = args.num;
+
+    }
   })
 
 
