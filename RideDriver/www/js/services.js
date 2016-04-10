@@ -202,6 +202,11 @@ angular.module('starter.services', [])
       var promise = Member.register(datasent).$promise;
 
       return commonCallback.defaultHandling(promise);
+    },
+
+    registerForNon : function(datasent){
+      var promise = Member.registerNonUST(datasent).$promise;
+      return commonCallback.defaultHandling(promise);
     }
 
   }

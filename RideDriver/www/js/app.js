@@ -7,7 +7,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 'starter.services','starter.directives', 'ngResource', 'lbServices','starter.constants', 'ngCordova'])
 
-.run(function($ionicPlatform, $rootScope) {
+.run(function($ionicPlatform, $rootScope, $timeout) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -20,6 +20,10 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
       // org.apache.cordova.statusbar required
       StatusBar.styleLightContent();
     }
+    // $timeout(function() {
+    //     navigator.splashscreen.hide();
+    // }, 3000);
+
     
   });
   $ionicPlatform.registerBackButtonAction(function (event) {
@@ -76,12 +80,12 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
   })
 
   .state('tab.gohome_ready', {
-    url: '/gohome/ready/:licence/:endTime/:location/:destination/:matchicon/:cancelTime',
+    url: '/gohome/ready/:licence/:endTime/:location/:destination/:matchicon/:cancelTime/:rideId',
     views: {
       'tab-gohome': {
         templateUrl: 'templates/driver-leave2.html',
         controller: 'matchCtrl',
-        params: ['licence','endTime','location','destination', 'matchicon', 'cancelTime']
+        params: ['licence','endTime','location','destination', 'matchicon', 'cancelTime', 'rideId']
       }
     }
   })
@@ -100,12 +104,12 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
     })
 
   .state('tab.gohkust_ready', {
-    url: '/gohkust/ready/:licence/:endTime/:location/:destination/:matchicon/:cancelTime',
+    url: '/gohkust/ready/:licence/:endTime/:location/:destination/:matchicon/:cancelTime/:rideId',
     views: {
       'tab-gohkust': {
         templateUrl: 'templates/driver-leave2.html',
         controller: 'matchCtrl',
-        params: ['licence','endTime','location','destination', 'matchicon', 'cancelTime']
+        params: ['licence','endTime','location','destination', 'matchicon', 'cancelTime', 'rideId']
       }
     }
   })
@@ -149,7 +153,9 @@ angular.module('starter', ['ionic','ionic.service.core', 'starter.controllers', 
 
 .config(function(LoopBackResourceProvider){
   // Change the URL where to access the LoopBack REST API server
-    LoopBackResourceProvider.setUrlBase('http://ridesharingfyp.ddns.net:3000/api');
+    // LoopBackResourceProvider.setUrlBase('http://ridesharingfyp.ddns.net:3000/api');
     // LoopBackResourceProvider.setUrlBase('http://192.168.0.111:3000/api');
+    LoopBackResourceProvider.setUrlBase('http://54.254.203.214:3000/api');
+   
  
 });

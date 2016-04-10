@@ -89,6 +89,7 @@
             </label>
             <label class="item item-input item-stacked-label" ng-if="info.hkustMember">
               <div class="input-label">Your ITSC</div>
+              <div style="color:red" class="item-text-wrap" ng-hide="myForm2.email.$dirty">*Use @ust.hk to login</div>
               <div style="color:red" ng-show="myForm2.email.$dirty && myForm2.email.$error.required">
                 ITSC is required
               </div>
