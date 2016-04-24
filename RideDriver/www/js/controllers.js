@@ -186,6 +186,13 @@ angular.module('starter.controllers', [])
       $ionicHistory.goBack();
     }).catch(function(error){
       console.log(error);
+      var alertPopup = $ionicPopup.alert({
+          title: 'Error',
+          template: 'Cannot register.'
+      });
+      alertPopup.then(function(res) {
+        
+      });
     }).finally(function(){
       loadingService.end($ionicLoading);
     });
@@ -202,7 +209,7 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('goHomeCtrl',function($scope, $state, $ionicHistory, $ionicPopup, Member, pushRegister, licencesManager, $localstorage, commonCallback, RideRequestService, safeChecking, QueueSeatProvider, RIDE_CONFIG, loadingService, $ionicLoading){
+.controller('goHomeCtrl',function($scope, $state, $ionicHistory, $ionicPopup, Member, pushRegister, licencesManager, $localstorage, commonCallback, RideRequestService, safeChecking, QueueSeatProvider, RIDE_CONFIG, loadingService, $ionicLoading, errorBox){
   $scope.ready = function(destination){
     if (!safeChecking.safeToStart()){
       var warningPopup = $ionicPopup.alert({
@@ -265,6 +272,7 @@ angular.module('starter.controllers', [])
 
    }).catch(function(error){
     console.log(error);
+    errorBox.start();
    }).finally(function(){
     loadingService.end($ionicLoading);
    });
@@ -368,6 +376,7 @@ angular.module('starter.controllers', [])
     QueueSeatProvider.clear();
     QueueSeatProvider.update(true, null);
     $scope.licences = licencesManager.getLicence();
+    $scope.doRefresh();
     // RideRequestService.getQueueSeatNumber(true).then(function(value){
     //   console.log(value);
     //   $scope.statistics = value.num;
@@ -646,6 +655,10 @@ angular.module('starter.controllers', [])
     $state.go("tab.setting_change_car");
   }
 
+  $scope.ridesharing = function(){
+    $state.go("tab.culture");
+  }
+
   $scope.saveSettings = function(genderPreferred){
     console.log(genderPreferred);
     $localstorage.set('genderPreference', genderPreferred);
@@ -718,7 +731,7 @@ angular.module('starter.controllers', [])
 })
 
 
-.controller('goustCtrl', function($scope, $ionicPopup, Ride, licencesManager, $state, $localstorage,RideRequestService, commonCallback, safeChecking, QueueSeatProvider, RIDE_CONFIG){
+.controller('goustCtrl', function($scope, $ionicPopup, Ride, licencesManager, $state, $localstorage,RideRequestService, commonCallback, safeChecking, QueueSeatProvider, RIDE_CONFIG, errorBox, loadingService, $ionicLoading){
   $scope.ready = function(destination){
     console.log("Safe? " + safeChecking.safeToStart());
     if (!safeChecking.safeToStart()){
@@ -761,6 +774,8 @@ angular.module('starter.controllers', [])
       "gender_preference": ($scope.genderPreferred === "true"),
       "leaveUst": false
     };
+
+    loadingService.start($ionicLoading);
     RideRequestService.addRide(info)
     .then(function(value){
         console.log(value);
@@ -777,7 +792,10 @@ angular.module('starter.controllers', [])
         $state.go('tab.gohkust_ready',{"licence":$scope.licence,"endTime":$scope.targetTime,'location': destination, 'destination': "HKUST", 'matchicon': value.status.matchicon, 'cancelTime': cancelTime, 'rideId': value.status.rideId});
 
    }).catch(function(error){
+    errorBox.start();
     console.log(error);
+   }).finally(function(){
+    loadingService.end($ionicLoading);
    });
 
 
@@ -820,6 +838,7 @@ angular.module('starter.controllers', [])
     QueueSeatProvider.clear();
     QueueSeatProvider.update(true, null);
     $scope.licences = licencesManager.getLicence();
+    $scope.doRefresh();
     // RideRequestService.getQueueSeatNumber(false).then(function(value){
     //   $scope.statistics = value.num;
     // });
@@ -857,7 +876,7 @@ angular.module('starter.controllers', [])
 })
 
 
-.controller("modifyLicenceCtrl", function($scope, $ionicModal, licencesManager, Member){
+.controller("modifyLicenceCtrl", function($scope, $ionicModal, licencesManager, Member, errorBox){
   //should be obtained from server
 
   // $scope.carInfo = [{"license_number": "AX123", "color": "red", "maker": "world"},
@@ -1010,6 +1029,7 @@ angular.module('starter.controllers', [])
       }
         
     }, function(error){
+      errorBox.start();
 
     });
   }

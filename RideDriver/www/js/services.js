@@ -317,6 +317,20 @@ angular.module('starter.services', [])
 
 })
 
+.service("errorBox", function($ionicPopup){
+  this.start = function(){
+    console.log("Starting a dialog");
+    var alertPopup = $ionicPopup.alert({
+        title: 'Error',
+        template: 'Connection problem!'
+    });
+    alertPopup.then(function(res) {
+        
+    });
+  }
+
+})
+
 // .service('connectDevice', function($cordovaPush, $cordovaToast){
 
 //   this.register = function(){
