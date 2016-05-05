@@ -301,19 +301,6 @@ angular.module('starter.services', [])
     queueSeat = {'home': null, 'hkust': null};
   }
 
-  // this.get = function(value){
-  //   if (queueSeat.home == null){
-  //     console.log(queueSeat);
-  //     console.log("updating count!")
-  //     this.update(null);
-  //   }
-
-  //   if (value)
-  //     return queueSeat['home'];
-  //   else
-  //     return queueSeat['hkust'];
-  // }
-
 
 })
 
@@ -331,38 +318,7 @@ angular.module('starter.services', [])
 
 })
 
-// .service('connectDevice', function($cordovaPush, $cordovaToast){
 
-//   this.register = function(){
-//     console.log(ionic);
-//     if (ionic.Platform.isAndroid()) {
-//         config = {
-//             "senderID": "721443256606" // REPLACE THIS WITH YOURS FROM GCM CONSOLE - also in the project URL like: https://console.developers.google.com/project/434205989073
-//         };
-//     }
-//     else if (ionic.Platform.isIOS()) {
-//       config = {
-//         "badge": "true",
-//         "sound": "true",
-//         "alert": "true"
-//       }
-//     }
-//     console.log($cordovaPush);
-//     $cordovaPush.register(config).then(function (result) {
-//       console.log("Register success " + result);
-
-//       $cordovaToast.showShortCenter('Registered for push notifications');
-//       $scope.registerDisabled=true;
-//       // ** NOTE: Android regid result comes back in the pushNotificationReceived, only iOS returned here
-//       if (ionic.Platform.isIOS()) {
-//         $scope.regId = result;
-//         storeDeviceToken("ios");
-//       }
-//     }, function (err) {
-//       console.log("Register error " + err)
-//     });
-//   }
-// })
 
 .service("pushIDManager", function($ionicPlatform, Member, $rootScope){
   var gcmID;
@@ -398,11 +354,7 @@ angular.module('starter.services', [])
       });
 
       push.on('notification', function(data) {
-        // console.log(data.message);
-        // console.log(data.title);
-        // console.log(data.count);
-        // console.log(data.sound);
-        // console.log(data.image);
+
         console.log("Received push", data.additionalData);
         var pushData = data.additionalData;
         if (pushData.status =="A0"){

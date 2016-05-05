@@ -9,18 +9,11 @@
 
             </div>
             <form name="myForm" class="form-bottom">
-<!--                 <label class="item item-input">
-                    <span class="input-label">Email</span>
-                    <input type="email" placeholder="Your Email" name="email" ng-model="info.email" required>
 
-                </label> -->
                 <div class="item item-input login">
                     <input type="email" placeholder="Your Email" name="email" ng-model="info.email" required class="login">
                 </div>
-<!--                 <label class="item item-input">
-                    <span class="input-label">Password</span>
-                    <input type="password" placeholder="" name="password" ng-model="info.password" required class="form-control">
-                </label> -->
+
                 <div class="item item-input login">
                     <input type="password" placeholder="Your Password" name="password" ng-model="info.password" required class="login">
 
@@ -45,53 +38,6 @@
 
         </div>
 
-
-
- <!-- Second version (using bootstrap) -->
-<!-- <div class="top-content">
-<div class="form-box">
-    <div class="form-top">
-        <div class="form-top-left">
-            <h3>Login to our application</h3>
-            <p>Enter username and password to log on:</p>
-        </div>
-
-    </div>
-
-    <form name="myForm" class="form-bottom form-horizontal">
-        <div class="form-group">
-            
-                <input type="email" name="email" ng-model="info.email" placeholder="Email" required class="form-control form-email input-lg">
-            
-            
-        </div>
-        <div class="form-group">
-            
-                <input type="password" placeholder="Password" name="password" ng-model="info.password" required class="form-control form-email input-lg">
-            
-            
-        </div>
-        <span style="color:red" ng-show="myForm.email.$dirty && myForm.email.$invalid">
-            <span ng-show="myForm.email.$error.required">Email is required.</span>
-            <span ng-show="myForm.email.$error.email">Invalid email address.</span>
-        </span>
-       <span style="color:red" ng-show="myForm.password.$dirty">
-            <span ng-show="myForm.password.$error.required">Password is required.</span>
-        </span>
-        <button class="btn btn-lg btn-block" type="submit" ng-click="signin(info)" ng-disabled="myForm.email.$error.required || myForm.email.$error.email || myForm.password.$error.required">Login</button>
-
-
-
-    </form>
-            <div class="button-bar">
-            <button class="button button-positive button-outline button-block button-small icon" ng-click="register()">Register</button>
-            <button class="button button-assertive button-outline button-block button-small" ui-sref="forgetPW">Forget Password</button>
-        </div>
-
-
-</div>
-</div>
- -->
 
 
     </ion-content>
